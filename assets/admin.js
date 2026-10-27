@@ -95,6 +95,22 @@ async function login(email, password) {
   return EST.sesion;
 }
 
+/** Envía el correo de recuperación de contraseña de Supabase Auth. */
+async function recuperarContrasena(email) {
+  const res = await fetch(`${cfg().SUPABASE_URL}/auth/v1/recover`, {
+    method: "POST",
+    headers: {
+      apikey: cfg().SUPABASE_ANON_KEY,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email })
+  });
+  if (!res.ok) {
+    const d = await res.json().catch(() => ({}));
+    throw new Error(d.msg || d.error_description || "No se pudo enviar el correo");
+  }
+}
+
 async function refrescarToken() {
   if (!EST.sesion?.refresh_token) return false;
   try {
@@ -636,6 +652,32 @@ function conectarEventos() {
     } finally {
       btn.disabled = false;
       btn.textContent = "Entrar";
+    }
+  });
+
+  $("#btn-recuperar").addEventListener("click", async () => {
+    const email = $("#email").value.trim();
+    const err = $("#login-error");
+    const info = $("#login-info");
+    err.classList.add("oculto");
+    info.classList.add("oculto");
+
+    if (!email) {
+      err.textContent = "Escribe tu correo primero";
+      err.classList.remove("oculto");
+      return;
+    }
+
+    try {
+      await recuperarContrasena(email);
+      info.textContent =
+        "Te enviamos un enlace a " + email + ". Revisa también el spam.";
+      info.classList.remove("oculto");
+    } catch (e) {
+      // No revelamos si el correo existe o no (evita enumeración de cuentas).
+      info.textContent =
+        "Si ese correo tiene cuenta, recibirás un enlace en unos minutos.";
+      info.classList.remove("oculto");
     }
   });
 

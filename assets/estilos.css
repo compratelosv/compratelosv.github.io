@@ -1421,3 +1421,31 @@ footer .legal {
   .tabs-admin { order: 3; width: 100%; }
   .tab { flex: 1; }
 }
+
+
+.btn-enlace {
+  background: none;
+  border: none;
+  color: var(--texto-tenue);
+  font-family: var(--fuente);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 10px 0 0;
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+.btn-enlace:hover { color: var(--acento); }
+
+.mensaje-info {
+  background: #0d2818;
+  border: 2px solid #3fb950;
+  color: #7ee787;
+  font-size: 12px;
+  padding: 12px 14px;
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
