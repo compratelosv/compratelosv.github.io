@@ -35,7 +35,8 @@ Wompi · Enlace de Pago + webhook HMAC
 | **1. Base de datos** | 7 tablas, RLS, RPC atómica | ✅ **VERIFICADO** |
 | **1b. Catálogo desde BD** | Frontend lee de Supabase con fallback | ✅ **VERIFICADO** |
 | **2. Checkout** | Formulario de envío + pedido vía RPC + confirmación | ✅ **VERIFICADO** |
-| **3. Auth** | Registro, login, verificación por correo | 🔶 SIGUIENTE |
+| **3. Panel admin** | Alta/edición de productos, fotos, pedidos, marcar vendido | ✅ **VERIFICADO** |
+| **3b. Auth clientes** | Registro y login de compradores | 🔶 SIGUIENTE |
 | **4. Cupones / referidos** | Sistema del PDF de BARATUSS | ⬜ PLANIFICADO |
 | **5. Pagos Wompi** | Enlace de pago + webhook firmado | ⛔ BLOQUEADO (comercio no aprobado) |
 | **6. Verificación WhatsApp** | Código por WhatsApp | ⛔ BLOQUEADO (API de pago) |
@@ -74,6 +75,8 @@ Wompi · Enlace de Pago + webhook HMAC
 ```
 db/001_esquema_inicial.sql   Esquema + RLS + RPC + categorías
 db/002_semilla_demo.sql      20 productos ficticios (reemplazables)
+db/003_admin.sql             shop_admins, RLS de escritura, Storage, RPCs de admin
+db/004_fix_montos.sql        Fix: el trigger de montos bloqueaba la RPC de creación
 ```
 
 Ambos son idempotentes (`create ... if not exists`, `on conflict do nothing`).
@@ -87,11 +90,13 @@ El bloque `REVERT` al final de `001` está comentado y marcado como destructivo.
 index.html                  Catálogo
 checkout.html               Formulario de pedido
 confirmacion.html           Pedido registrado
+admin.html                  Panel de administración
 assets/
   config.js                 URL + anon key (ambas públicas)
   estilos.css               Diseño brutalista · variables en :root
   tienda.js                 Catálogo, filtros, carrito
   checkout.js               Validación + llamada a la RPC
+  admin.js                  Login Supabase Auth + gestión de productos y pedidos
   thumbs/                   21 placeholders SVG
 data/productos.json         Fallback local de demo
 db/                         Migraciones versionadas
@@ -165,6 +170,70 @@ leyendo `precio` y `stock` de la base de datos.
 
 ---
 
+## Panel de administración
+
+🌐 **https://compratelosv.github.io/admin.html**
+
+### Cómo se protege (no hay contraseñas en el código)
+
+| Capa | Mecanismo |
+|---|---|
+| Autenticación | **Supabase Auth** (email + contraseña). La contraseña nunca pasa por el JS del sitio. |
+| Autorización | **RLS en Postgres**. Cada política llama a `shop_es_admin()`, que compara el correo del JWT contra `public.shop_admins`. |
+| Fotos | Bucket `productos`: lectura pública, escritura **solo** si `shop_es_admin()`. |
+| Montos | Un trigger impide alterar `subtotal`, `total`, `descuento` o `envío` de un pedido ya creado. |
+
+Un usuario autenticado que **no** esté en `shop_admins` no puede escribir nada:
+la base de datos devuelve `42501` aunque tenga sesión válida.
+
+### Qué puede hacer la administradora
+
+| Acción | Cómo |
+|---|---|
+| Marcar una pieza como vendida | Un clic en `✓ Vendido` → `stock = 0`, desaparece del catálogo |
+| Volver a ponerla disponible | Un clic en `↺ Disponible` |
+| Crear producto | `+ Nuevo producto`, con subida de fotos a Storage |
+| Editar producto | Precio, stock, talla, marca, condición, fotos, destacado |
+| Ocultar sin borrar | `Ocultar` → `activo = false`, reversible |
+| Ver pedidos | Tab **Pedidos**, con detalle de ítems y dirección |
+| Cambiar estado del pedido | Selector: pendiente → pagado → en preparación → enviado → entregado / cancelado / reembolsado |
+| Actualizar estado de pago | pendiente / aprobado / rechazado / reembolsado |
+
+### Dar acceso a un nuevo administrador
+
+1. Insertar el correo en la tabla (solo desde el dashboard de Supabase):
+   ```sql
+   insert into public.shop_admins (email, nombre) values ('correo@dominio.com', 'Nombre');
+   ```
+2. Crear el usuario en **Authentication → Users → Add user → Send invitation**.
+3. La persona recibe un correo, define su contraseña y ya puede entrar.
+
+### Pruebas ejecutadas sobre el panel
+
+| Prueba | Resultado |
+|---|---|
+| Login con contraseña incorrecta | ✅ `Invalid login credentials`, panel sigue oculto |
+| Login con usuario admin válido | ✅ panel carga 20 productos |
+| Marcar vendido y recargar | ✅ persistió en la base de datos |
+| Crear producto con foto | ✅ 21 productos, imagen subida a Storage (200, `image/png`) |
+| Editar precio y nombre | ✅ `$17.50` → `$19.99` persistido |
+| Admin lee todos los pedidos | ✅ visible con detalle de ítems |
+| Admin cambia estado | ✅ `enviado` + pago `aprobado` persistidos |
+| **Admin intenta alterar `total`** | ✅ **`400 P0001` — montos del pedido no se pueden modificar** |
+| `shop_es_admin()` sin sesión | ✅ `false` |
+| INSERT/UPDATE producto sin sesión | ✅ `42501` violación de RLS |
+| Leer `shop_admins` sin sesión | ✅ `permission denied` |
+| Fotos públicas | ✅ accesibles sin autenticación (necesario para el catálogo) |
+
+### Endurecimiento adicional aplicado
+
+- `shop_admins` sin políticas RLS y con `REVOKE ALL`: solo el owner de la base puede modificarla.
+- El panel incluye "¿Olvidaste tu contraseña?" → `POST /auth/v1/recover`, con respuesta neutra para no revelar si el correo existe.
+- `admin.html` tiene `robots.txt` + `<meta name="robots" content="noindex, nofollow">`.
+- La `service_role` key **no existe** en el repositorio (verificado con `grep` y decodificación del JWT de `config.js`).
+
+---
+
 ## Seguridad
 
 **Lo que se puede publicar** (y está en `config.js`):
@@ -220,3 +289,4 @@ Verificado con `grep`: no hay ninguna llave `service_role` ni `sb_secret_` en el
 - **2026-10-26** — Estructura inicial, 20 productos demo, 21 placeholders, catálogo + carrito.
 - **2026-10-26** — Esquema Supabase (7 tablas + RLS + RPC), 20 productos cargados, frontend conectado y verificado en producción.
 - **2026-10-26** — Checkout completo: pedidos reales vía RPC, idempotencia, confirmación con número de pedido. E2E verificado en producción.
+- **2026-10-26** — Panel admin con permisos por RLS, subida de fotos, marcado de vendidos y gestión de pedidos. Bug del trigger de montos corregido en `004`.
