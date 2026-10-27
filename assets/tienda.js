@@ -131,7 +131,7 @@ function pintarCarrito() {
   $("#btn-checkout").disabled = ESTADO.carrito.length === 0;
 
   $$("[data-quitar]").forEach((btn) => {
-    btn.addEventListener("click", () => quitarDelCarrito(Number(btn.dataset.quitar)));
+    btn.addEventListener("click", () => quitarDelCarrito(btn.dataset.quitar));
   });
 }
 
@@ -168,7 +168,9 @@ function productosFiltrados() {
       break;
     default:
       // relevancia: destacados primero, luego por id
-      lista.sort((a, b) => (b.destacado === true) - (a.destacado === true) || a.id - b.id);
+      // relevancia: se respeta el orden que ya entrega la fuente
+      // (Supabase: destacado desc, orden asc)
+      break;
   }
   return lista;
 }
@@ -215,7 +217,7 @@ function pintarCatalogo() {
     .join("");
 
   $$("[data-agregar]").forEach((btn) => {
-    btn.addEventListener("click", () => agregarAlCarrito(Number(btn.dataset.agregar)));
+    btn.addEventListener("click", () => agregarAlCarrito(btn.dataset.agregar));
   });
 }
 
@@ -265,15 +267,102 @@ function conectarControles() {
   });
 }
 
+/* ---------- Capa de datos ---------- */
+
+/** Normaliza un producto de Supabase al formato interno. */
+function normalizarProducto(row, cats) {
+  const cat = cats.find((c) => c.id === row.categoria_id);
+  return {
+    id: row.id,
+    nombre: row.nombre,
+    categoria: cat ? cat.slug : "otros",
+    subtipo: row.subtipo || "",
+    marca: row.marca || "—",
+    talla: row.talla || "",
+    color: row.color || "—",
+    condicion: row.condicion,
+    precio: Number(row.precio),
+    stock: Number(row.stock),
+    imagen: (row.imagenes && row.imagenes[0]) || "assets/thumbs/thumb-sold.svg",
+    descripcion: row.descripcion || "",
+    destacado: row.destacado,
+    vence_en: row.vence_en
+  };
+}
+
+/** Lee el catálogo desde Supabase (REST). Devuelve null si falla. */
+async function cargarDesdeSupabase() {
+  const cfg = window.CONFIG;
+  if (!cfg || !cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) return null;
+
+  const headers = {
+    apikey: cfg.SUPABASE_ANON_KEY,
+    Authorization: "Bearer " + cfg.SUPABASE_ANON_KEY,
+    Accept: "application/json"
+  };
+
+  const [resProds, resCats] = await Promise.all([
+    fetch(
+      `${cfg.SUPABASE_URL}/rest/v1/shop_productos?select=*&activo=eq.true&order=destacado.desc,orden.asc,creado_en.desc`,
+      { headers }
+    ),
+    fetch(
+      `${cfg.SUPABASE_URL}/rest/v1/shop_categorias?select=id,slug,nombre&activa=eq.true&order=orden.asc`,
+      { headers }
+    )
+  ]);
+
+  if (!resProds.ok || !resCats.ok) {
+    throw new Error(`Supabase respondió ${resProds.status}/${resCats.status}`);
+  }
+
+  const productos = await resProds.json();
+  const cats = await resCats.json();
+
+  return {
+    categorias: cats.map((c) => ({ id: c.slug, nombre: c.nombre })),
+    productos: productos.map((p) => normalizarProducto(p, cats))
+  };
+}
+
+/** Lee el catálogo del JSON local (fallback de demo). */
+async function cargarDesdeJSON() {
+  const res = await fetch("data/productos.json", { cache: "no-cache" });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
 /* ---------- Arranque ---------- */
 async function iniciar() {
   try {
-    const res = await fetch("data/productos.json", { cache: "no-cache" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    let data = null;
+    let origen = "local";
+
+    if (window.CONFIG && window.CONFIG.SUPABASE_URL) {
+      try {
+        data = await cargarDesdeSupabase();
+        if (data) origen = "supabase";
+      } catch (e) {
+        console.warn("Supabase no disponible, usando JSON local:", e.message);
+      }
+    }
+
+    if (!data) {
+      if (window.CONFIG && !window.CONFIG.USAR_FALLBACK_LOCAL) throw new Error("Sin fuente de datos");
+      data = await cargarDesdeJSON();
+      origen = "local";
+    }
 
     ESTADO.productos = data.productos;
     ESTADO.categorias = data.categorias;
+    ESTADO.origen = origen;
+
+    // Indicar visualmente de dónde vienen los datos
+    const badge = document.getElementById("origen-datos");
+    if (badge) {
+      badge.textContent = origen === "supabase" ? "Supabase" : "JSON local (fallback)";
+      badge.dataset.origen = origen;
+    }
 
     cargarCarrito();
     pintarFiltros();

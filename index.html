@@ -22,7 +22,7 @@
 
   <!-- Aviso permanente: esto NO es producción -->
   <div class="aviso-demo">
-    ⚠ Entorno de demostración — catálogo ficticio · no apto para producción
+    ⚠ Entorno de demostración — catálogo ficticio en Supabase · no apto para producción
   </div>
 
   <header class="sitio">
@@ -61,6 +61,7 @@
       <div class="titulo-seccion">
         <h2>Catálogo</h2>
         <span class="conteo" id="conteo-productos">cargando…</span>
+        <span class="conteo" id="origen-datos" data-origen="local">—</span>
       </div>
 
       <div class="filtros">
@@ -162,6 +163,7 @@
 
   <div id="toast" role="status" aria-live="polite"></div>
 
+  <script src="assets/config.js"></script>
   <script src="assets/tienda.js"></script>
 </body>
 </html>

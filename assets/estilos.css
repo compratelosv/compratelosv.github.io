@@ -230,6 +230,25 @@ nav.principal a.activo {
   letter-spacing: 1px;
 }
 
+/* Indicador del origen de los datos (Supabase vs fallback local) */
+#origen-datos {
+  border: 1px solid var(--superficie-2);
+  padding: 2px 8px;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+#origen-datos[data-origen="supabase"] {
+  border-color: #2ea043;
+  color: #3fb950;
+}
+
+#origen-datos[data-origen="local"] {
+  border-color: #9e6a03;
+  color: #d29922;
+}
+
 /* ---------- Filtros ---------- */
 .filtros {
   display: flex;
