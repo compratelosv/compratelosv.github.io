@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es-SV">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel — Compratelosv</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#ff3300">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/estilos.css">
+</head>
+<body class="admin-body">
+
+  <div class="aviso-demo">⚠ Panel de administración — entorno de demostración</div>
+
+  <!-- ================= LOGIN ================= -->
+  <section id="vista-login" class="pantalla-login">
+    <form id="form-login" class="caja-login" novalidate>
+      <h1>Compratelosv</h1>
+      <p class="subtitulo">Panel de administración</p>
+
+      <div class="campo">
+        <label for="email">Correo</label>
+        <input type="email" id="email" name="email" autocomplete="username"
+               required placeholder="tu@correo.com">
+      </div>
+
+      <div class="campo">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" name="password" autocomplete="current-password"
+               required placeholder="••••••••">
+      </div>
+
+      <p id="login-error" class="mensaje-error oculto" role="alert"></p>
+
+      <button type="submit" class="btn-primario" id="btn-entrar">Entrar</button>
+
+      <p class="nota-pie">
+        El acceso se valida con Supabase Auth. Los permisos los aplica
+        la base de datos (RLS), no este formulario.
+      </p>
+    </form>
+  </section>
+
+  <!-- ================= PANEL ================= -->
+  <section id="vista-panel" class="oculto">
+
+    <header class="barra-admin">
+      <div class="logo-admin">COMPRATE<span>LO</span>SV <span class="badge-dev">ADMIN</span></div>
+      <nav class="tabs-admin">
+        <button class="tab" data-tab="productos" aria-pressed="true">Productos</button>
+        <button class="tab" data-tab="pedidos" aria-pressed="false">Pedidos</button>
+      </nav>
+      <div class="usuario-admin">
+        <span id="email-admin">—</span>
+        <button id="btn-salir" class="btn-salir">Salir</button>
+      </div>
+    </header>
+
+    <main class="contenedor-admin">
+
+      <!-- ---------- PRODUCTOS ---------- -->
+      <section id="tab-productos">
+        <div class="cabecera-tab">
+          <h2>Productos <span class="conteo" id="conteo-admin">—</span></h2>
+          <button class="btn-primario btn-compacto" id="btn-nuevo">+ Nuevo producto</button>
+        </div>
+
+        <div class="barra-busqueda">
+          <input type="search" id="buscar-producto" placeholder="Buscar por nombre, marca o talla…">
+          <select id="filtro-admin-cat"><option value="">Todas las categorías</option></select>
+          <select id="filtro-admin-estado">
+            <option value="">Todos</option>
+            <option value="disponible">Disponibles</option>
+            <option value="vendido">Vendidos</option>
+            <option value="inactivo">Inactivos</option>
+          </select>
+        </div>
+
+        <div id="lista-productos" class="lista-admin">
+          <p class="carrito-vacio">Cargando…</p>
+        </div>
+      </section>
+
+      <!-- ---------- PEDIDOS ---------- -->
+      <section id="tab-pedidos" class="oculto">
+        <div class="cabecera-tab">
+          <h2>Pedidos <span class="conteo" id="conteo-pedidos">—</span></h2>
+          <button class="btn-primario btn-compacto" id="btn-refrescar-pedidos">Refrescar</button>
+        </div>
+        <div id="lista-pedidos" class="lista-admin">
+          <p class="carrito-vacio">Cargando…</p>
+        </div>
+      </section>
+
+    </main>
+  </section>
+
+  <!-- ================= MODAL PRODUCTO ================= -->
+  <div id="modal-producto" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="titulo-modal">
+    <div class="modal-caja">
+      <div class="modal-cabecera">
+        <h3 id="titulo-modal">Nuevo producto</h3>
+        <button class="btn-cerrar" id="btn-cerrar-modal" aria-label="Cerrar">×</button>
+      </div>
+
+      <form id="form-producto" class="modal-cuerpo" novalidate>
+        <input type="hidden" id="p-id">
+
+        <div class="campo">
+          <label for="p-nombre">Nombre *</label>
+          <input type="text" id="p-nombre" required maxlength="120"
+                 placeholder="Ej. Camisa Polo Ralph Lauren">
+        </div>
+
+        <div class="fila-2">
+          <div class="campo">
+            <label for="p-categoria">Categoría *</label>
+            <select id="p-categoria" required></select>
+          </div>
+          <div class="campo">
+            <label for="p-subtipo">Subtipo</label>
+            <input type="text" id="p-subtipo" maxlength="40" placeholder="Cincho, Sérum…">
+          </div>
+        </div>
+
+        <div class="fila-2">
+          <div class="campo">
+            <label for="p-marca">Marca</label>
+            <input type="text" id="p-marca" maxlength="60">
+          </div>
+          <div class="campo">
+            <label for="p-talla">Talla / medida</label>
+            <input type="text" id="p-talla" maxlength="20" placeholder="M, 30 ml…">
+          </div>
+        </div>
+
+        <div class="fila-2">
+          <div class="campo">
+            <label for="p-color">Color</label>
+            <input type="text" id="p-color" maxlength="40">
+          </div>
+          <div class="campo">
+            <label for="p-condicion">Condición *</label>
+            <select id="p-condicion" required>
+              <option>Nuevo con etiqueta</option>
+              <option>Nuevo sellado</option>
+              <option selected>Como nuevo</option>
+              <option>Usado - buen estado</option>
+              <option>Usado - con detalles</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="fila-2">
+          <div class="campo">
+            <label for="p-precio">Precio (USD) *</label>
+            <input type="number" id="p-precio" required min="0.01" step="0.01" placeholder="12.00">
+          </div>
+          <div class="campo">
+            <label for="p-stock">Stock</label>
+            <input type="number" id="p-stock" min="0" step="1" value="1">
+            <small class="ayuda-campo">Ropa usada = 1 (pieza única)</small>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="p-descripcion">Descripción</label>
+          <textarea id="p-descripcion" rows="3" maxlength="600"
+                    placeholder="Detalles, medidas, defectos si los hay…"></textarea>
+        </div>
+
+        <div class="campo">
+          <label for="p-fotos">Fotos</label>
+          <input type="file" id="p-fotos" accept="image/jpeg,image/png,image/webp,image/avif" multiple>
+          <small class="ayuda-campo">Máx. 5 MB por foto. La primera será la portada.</small>
+          <div id="preview-fotos" class="preview-fotos"></div>
+        </div>
+
+        <label class="check-inline">
+          <input type="checkbox" id="p-destacado"> Destacar en el catálogo
+        </label>
+
+        <p id="form-error" class="mensaje-error oculto" role="alert"></p>
+
+        <div class="modal-acciones">
+          <button type="button" class="btn-secundario" id="btn-cancelar-modal">Cancelar</button>
+          <button type="submit" class="btn-primario btn-compacto" id="btn-guardar">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/admin.js"></script>
+</body>
+</html>
