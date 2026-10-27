@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es-SV">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compratelosv — Ropa, accesorios y skincare · El Salvador</title>
+  <meta name="description" content="Tienda en línea de ropa, accesorios y skincare en El Salvador. Piezas seleccionadas, envíos a todo el país.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#ff3300">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Compratelosv — Ropa, accesorios y skincare">
+  <meta property="og:description" content="Piezas seleccionadas en El Salvador. Envíos a todo el país.">
+  <meta property="og:locale" content="es_SV">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/estilos.css">
+</head>
+<body>
+
+  <!-- Aviso permanente: esto NO es producción -->
+  <div class="aviso-demo">
+    ⚠ Entorno de demostración — catálogo ficticio · no apto para producción
+  </div>
+
+  <header class="sitio">
+    <div class="barra">
+      <a href="#" class="logo">
+        COMPRATE<span>LO</span>SV <span class="badge-dev">DEV</span>
+      </a>
+
+      <nav class="principal" aria-label="Navegación principal">
+        <a href="#catalogo" class="activo">Catálogo</a>
+        <a href="#catalogo">Ropa</a>
+        <a href="#catalogo">Accesorios</a>
+        <a href="#catalogo">Skincare</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+
+      <button class="btn-carrito" id="btn-carrito" aria-label="Abrir carrito de compras">
+        CARRITO <span id="contador-carrito">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Ropa, accesorios<br>y skincare <em>en<br>El Salvador</em></h1>
+      <p>
+        Piezas seleccionadas, muchas de ellas únicas. Cuando se vende una, no vuelve.
+        Envíos a todo el país.
+      </p>
+      <span class="marcador">
+        Texto provisional · reemplazar con la propuesta real del negocio
+      </span>
+    </section>
+
+    <section class="contenedor" id="catalogo">
+      <div class="titulo-seccion">
+        <h2>Catálogo</h2>
+        <span class="conteo" id="conteo-productos">cargando…</span>
+      </div>
+
+      <div class="filtros">
+        <div class="grupo" id="filtros-categoria" role="group" aria-label="Filtrar por categoría">
+          <!-- chips generados por JS -->
+        </div>
+
+        <div class="grupo">
+          <label for="filtro-condicion">Condición</label>
+          <select id="filtro-condicion">
+            <option value="todas">Todas</option>
+            <option value="Nuevo con etiqueta">Nuevo con etiqueta</option>
+            <option value="Nuevo sellado">Nuevo sellado</option>
+            <option value="Como nuevo">Como nuevo</option>
+            <option value="Usado - buen estado">Usado — buen estado</option>
+          </select>
+        </div>
+
+        <div class="grupo">
+          <label for="filtro-orden">Ordenar</label>
+          <select id="filtro-orden">
+            <option value="relevancia">Relevancia</option>
+            <option value="precio-asc">Precio ↑</option>
+            <option value="precio-desc">Precio ↓</option>
+            <option value="nombre">Nombre A–Z</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid-productos" id="grid-productos" aria-live="polite">
+        <!-- tarjetas generadas por JS -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="sitio" id="contacto">
+    <div class="interior">
+      <div>
+        <h4>Compratelosv</h4>
+        <p style="margin:0;font-size:12px;color:var(--texto-tenue);">
+          Ropa, accesorios y skincare.<br>El Salvador.
+        </p>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <a href="#">WhatsApp — pendiente</a>
+        <a href="#">Correo — pendiente</a>
+        <a href="#">Instagram — pendiente</a>
+      </div>
+      <div>
+        <h4>Políticas</h4>
+        <a href="#">Envíos y entregas</a>
+        <a href="#">Cambios y devoluciones</a>
+        <a href="#">Privacidad</a>
+      </div>
+      <div>
+        <h4>Estado</h4>
+        <p style="margin:0;font-size:12px;color:var(--texto-tenue);">
+          Entorno de desarrollo.<br>
+          Sin pasarela de pago activa.<br>
+          No procesa dinero real.
+        </p>
+      </div>
+    </div>
+    <div class="legal">
+      © 2026 Compratelosv — Sitio de demostración. Los productos mostrados son ficticios.
+    </div>
+  </footer>
+
+  <!-- Carrito lateral -->
+  <aside class="panel-carrito" id="panel-carrito" aria-hidden="true" aria-label="Carrito de compras">
+    <div class="cabecera">
+      <h2>Tu carrito</h2>
+      <button class="btn-cerrar" id="btn-cerrar-carrito" aria-label="Cerrar carrito">×</button>
+    </div>
+
+    <div class="items" id="items-carrito">
+      <p class="carrito-vacio">Tu carrito está vacío.</p>
+    </div>
+
+    <div class="totales">
+      <div class="linea-total">
+        <span>Subtotal</span>
+        <span id="subtotal-carrito">$0.00</span>
+      </div>
+      <div class="linea-total">
+        <span>Envío — casa ($3.00) / agencia ($2.50)</span>
+        <span>se calcula en checkout</span>
+      </div>
+      <div class="linea-total gran">
+        <span>Total</span>
+        <span id="total-carrito">$0.00</span>
+      </div>
+      <button class="btn-primario" id="btn-checkout" disabled>
+        Continuar al pago
+      </button>
+    </div>
+  </aside>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="assets/tienda.js"></script>
+</body>
+</html>

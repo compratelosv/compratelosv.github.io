@@ -1,0 +1,176 @@
+{
+  "_meta": {
+    "AVISO": "DATOS DE DEMO — NO SON PRODUCTOS REALES. Reemplazar antes de publicar.",
+    "generado": "2026-10-26",
+    "total": 20,
+    "moneda": "USD",
+    "nota": "Ropa usada = piezas únicas. stock=1 por defecto. Si hay 2+ prendas iguales, se crea otro producto o una variante."
+  },
+  "categorias": [
+    { "id": "ropa", "nombre": "Ropa", "slug": "ropa" },
+    { "id": "accesorios", "nombre": "Accesorios", "slug": "accesorios" },
+    { "id": "skincare", "nombre": "Skincare", "slug": "skincare" }
+  ],
+  "productos": [
+    {
+      "id": 1, "nombre": "Producto 1", "categoria": "ropa",
+      "marca": "Marca demo", "talla": "M", "color": "Negro",
+      "condicion": "Como nuevo", "precio": 12.0, "stock": 1,
+      "imagen": "assets/thumbs/thumb-01.svg",
+      "descripcion": "Descripción de demo. Reemplazar con detalles reales de la prenda.",
+      "destacado": true
+    },
+    {
+      "id": 2, "nombre": "Producto 2", "categoria": "ropa",
+      "marca": "Marca demo", "talla": "S", "color": "Blanco",
+      "condicion": "Usado - buen estado", "precio": 8.5, "stock": 1,
+      "imagen": "assets/thumbs/thumb-02.svg",
+      "descripcion": "Descripción de demo. Reemplazar con detalles reales de la prenda.",
+      "destacado": false
+    },
+    {
+      "id": 3, "nombre": "Producto 3", "categoria": "ropa",
+      "marca": "Marca demo", "talla": "L", "color": "Azul",
+      "condicion": "Nuevo con etiqueta", "precio": 18.0, "stock": 1,
+      "imagen": "assets/thumbs/thumb-03.svg",
+      "descripcion": "Descripción de demo. Reemplazar con detalles reales de la prenda.",
+      "destacado": true
+    },
+    {
+      "id": 4, "nombre": "Producto 4", "categoria": "ropa",
+      "marca": "Marca demo", "talla": "XL", "color": "Gris",
+      "condicion": "Como nuevo", "precio": 15.0, "stock": 1,
+      "imagen": "assets/thumbs/thumb-04.svg",
+      "descripcion": "Descripción de demo. Reemplazar con detalles reales de la prenda.",
+      "destacado": false
+    },
+    {
+      "id": 5, "nombre": "Producto 5", "categoria": "ropa",
+      "marca": "Marca demo", "talla": "M", "color": "Rojo",
+      "condicion": "Usado - buen estado", "precio": 10.0, "stock": 1,
+      "imagen": "assets/thumbs/thumb-05.svg",
+      "descripcion": "Descripción de demo. Reemplazar con detalles reales de la prenda.",
+      "destacado": false
+    },
+    {
+      "id": 6, "nombre": "Producto 6", "categoria": "ropa",
+      "marca": "Marca demo", "talla": "S", "color": "Verde",
+      "condicion": "Como nuevo", "precio": 14.0, "stock": 1,
+      "imagen": "assets/thumbs/thumb-06.svg",
+      "descripcion": "Descripción de demo. Reemplazar con detalles reales de la prenda.",
+      "destacado": false
+    },
+    {
+      "id": 7, "nombre": "Producto 7", "categoria": "ropa",
+      "marca": "Marca demo", "talla": "L", "color": "Beige",
+      "condicion": "Nuevo con etiqueta", "precio": 22.0, "stock": 1,
+      "imagen": "assets/thumbs/thumb-07.svg",
+      "descripcion": "Descripción de demo. Reemplazar con detalles reales de la prenda.",
+      "destacado": true
+    },
+    {
+      "id": 8, "nombre": "Producto 8", "categoria": "ropa",
+      "marca": "Marca demo", "talla": "XL", "color": "Café",
+      "condicion": "Usado - buen estado", "precio": 9.0, "stock": 1,
+      "imagen": "assets/thumbs/thumb-08.svg",
+      "descripcion": "Descripción de demo. Reemplazar con detalles reales de la prenda.",
+      "destacado": false
+    },
+    {
+      "id": 9, "nombre": "Producto 9", "categoria": "accesorios", "subtipo": "Cincho",
+      "marca": "Marca demo", "talla": "Única", "color": "Negro",
+      "condicion": "Como nuevo", "precio": 7.0, "stock": 1,
+      "imagen": "assets/thumbs/thumb-09.svg",
+      "descripcion": "Descripción de demo. Reemplazar con detalles reales del accesorio.",
+      "destacado": false
+    },
+    {
+      "id": 10, "nombre": "Producto 10", "categoria": "accesorios", "subtipo": "Cartera",
+      "marca": "Marca demo", "talla": "Única", "color": "Café",
+      "condicion": "Como nuevo", "precio": 25.0, "stock": 1,
+      "imagen": "assets/thumbs/thumb-10.svg",
+      "descripcion": "Descripción de demo. Reemplazar con detalles reales del accesorio.",
+      "destacado": true
+    },
+    {
+      "id": 11, "nombre": "Producto 11", "categoria": "accesorios", "subtipo": "Reloj",
+      "marca": "Marca demo", "talla": "Única", "color": "Plateado",
+      "condicion": "Usado - buen estado", "precio": 30.0, "stock": 1,
+      "imagen": "assets/thumbs/thumb-11.svg",
+      "descripcion": "Descripción de demo. Reemplazar con detalles reales del accesorio.",
+      "destacado": false
+    },
+    {
+      "id": 12, "nombre": "Producto 12", "categoria": "accesorios", "subtipo": "Gorra",
+      "marca": "Marca demo", "talla": "Única", "color": "Negro",
+      "condicion": "Nuevo con etiqueta", "precio": 12.0, "stock": 1,
+      "imagen": "assets/thumbs/thumb-12.svg",
+      "descripcion": "Descripción de demo. Reemplazar con detalles reales del accesorio.",
+      "destacado": false
+    },
+    {
+      "id": 13, "nombre": "Producto 13", "categoria": "accesorios", "subtipo": "Lentes",
+      "marca": "Marca demo", "talla": "Única", "color": "Negro",
+      "condicion": "Como nuevo", "precio": 15.0, "stock": 1,
+      "imagen": "assets/thumbs/thumb-13.svg",
+      "descripcion": "Descripción de demo. Reemplazar con detalles reales del accesorio.",
+      "destacado": false
+    },
+    {
+      "id": 14, "nombre": "Producto 14", "categoria": "accesorios", "subtipo": "Collar",
+      "marca": "Marca demo", "talla": "Única", "color": "Dorado",
+      "condicion": "Como nuevo", "precio": 9.0, "stock": 1,
+      "imagen": "assets/thumbs/thumb-14.svg",
+      "descripcion": "Descripción de demo. Reemplazar con detalles reales del accesorio.",
+      "destacado": false
+    },
+    {
+      "id": 15, "nombre": "Producto 15", "categoria": "accesorios", "subtipo": "Bufanda",
+      "marca": "Marca demo", "talla": "Única", "color": "Beige",
+      "condicion": "Usado - buen estado", "precio": 6.0, "stock": 1,
+      "imagen": "assets/thumbs/thumb-15.svg",
+      "descripcion": "Descripción de demo. Reemplazar con detalles reales del accesorio.",
+      "destacado": false
+    },
+    {
+      "id": 16, "nombre": "Producto 16", "categoria": "accesorios", "subtipo": "Mochila",
+      "marca": "Marca demo", "talla": "Única", "color": "Gris",
+      "condicion": "Como nuevo", "precio": 20.0, "stock": 1,
+      "imagen": "assets/thumbs/thumb-16.svg",
+      "descripcion": "Descripción de demo. Reemplazar con detalles reales del accesorio.",
+      "destacado": true
+    },
+    {
+      "id": 17, "nombre": "Producto 17", "categoria": "skincare", "subtipo": "Sérum",
+      "marca": "Marca demo", "talla": "30 ml", "color": "—",
+      "condicion": "Nuevo sellado", "precio": 18.0, "stock": 3,
+      "imagen": "assets/thumbs/thumb-17.svg",
+      "descripcion": "Descripción de demo. Reemplazar con ingredientes y modo de uso reales.",
+      "destacado": false
+    },
+    {
+      "id": 18, "nombre": "Producto 18", "categoria": "skincare", "subtipo": "Crema facial",
+      "marca": "Marca demo", "talla": "50 ml", "color": "—",
+      "condicion": "Nuevo sellado", "precio": 15.0, "stock": 2,
+      "imagen": "assets/thumbs/thumb-18.svg",
+      "descripcion": "Descripción de demo. Reemplazar con ingredientes y modo de uso reales.",
+      "destacado": true
+    },
+    {
+      "id": 19, "nombre": "Producto 19", "categoria": "skincare", "subtipo": "Protector solar",
+      "marca": "Marca demo", "talla": "60 ml", "color": "—",
+      "condicion": "Nuevo sellado", "precio": 20.0, "stock": 4,
+      "imagen": "assets/thumbs/thumb-19.svg",
+      "descripcion": "Descripción de demo. Reemplazar con ingredientes y modo de uso reales.",
+      "destacado": false
+    },
+    {
+      "id": 20, "nombre": "Producto 20", "categoria": "skincare", "subtipo": "Limpiador",
+      "marca": "Marca demo", "talla": "150 ml", "color": "—",
+      "condicion": "Nuevo sellado", "precio": 12.0, "stock": 0,
+      "imagen": "assets/thumbs/thumb-20.svg",
+      "descripcion": "Producto de demo marcado como AGOTADO para probar ese estado.",
+      "destacado": false
+    }
+  ]
+}
