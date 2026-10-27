@@ -257,9 +257,12 @@ function conectarControles() {
   $("#btn-cerrar-carrito").addEventListener("click", cerrarCarrito);
 
   $("#btn-checkout").addEventListener("click", () => {
-    // TODO Fase 1b: enviar pedido a Supabase. Hoy solo valida.
-    const { unidades, subtotal } = totalesCarrito();
-    toast(`Checkout pendiente de conectar — ${unidades} ítem(s), ${dinero(subtotal)}`);
+    const { unidades } = totalesCarrito();
+    if (unidades === 0) {
+      toast("Tu carrito está vacío");
+      return;
+    }
+    window.location.href = "checkout.html";
   });
 
   document.addEventListener("keydown", (e) => {

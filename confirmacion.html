@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es-SV">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedido confirmado — Compratelosv</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#ff3300">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/estilos.css">
+</head>
+<body>
+
+  <div class="aviso-demo">
+    ⚠ Entorno de demostración — pedido de prueba, no se cobró dinero
+  </div>
+
+  <header class="sitio">
+    <div class="barra">
+      <a href="index.html" class="logo">
+        COMPRATE<span>LO</span>SV <span class="badge-dev">DEV</span>
+      </a>
+      <nav class="principal" aria-label="Navegación principal">
+        <a href="index.html">Seguir comprando</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <div id="contenido-confirmacion">
+      <p class="carrito-vacio">Cargando…</p>
+    </div>
+  </main>
+
+  <footer class="sitio">
+    <div class="legal" style="max-width:var(--max-ancho);margin:0 auto;">
+      © 2026 Compratelosv — entorno de demostración.
+    </div>
+  </footer>
+
+  <script src="assets/config.js"></script>
+  <script>
+  (function () {
+    const CLAVE = "compratelosv_ultimo_pedido";
+    const cont = document.getElementById("contenido-confirmacion");
+
+    function dinero(n) { return "$" + Number(n).toFixed(2); }
+
+    let pedido = null;
+    try {
+      pedido = JSON.parse(sessionStorage.getItem(CLAVE) || "null");
+    } catch (e) { pedido = null; }
+
+    if (!pedido) {
+      cont.innerHTML = `
+        <div class="titulo-seccion"><h2>No hay pedido reciente</h2></div>
+        <p class="carrito-vacio">
+          No encontramos un pedido en esta sesión.<br><br>
+          <a href="index.html" class="btn-primario" style="display:inline-block;width:auto;padding:12px 24px;text-decoration:none;">
+            Ir al catálogo
+          </a>
+        </p>`;
+      return;
+    }
+
+    const metodo = {
+      contraentrega: "Pago contra entrega",
+      transferencia: "Transferencia bancaria",
+      tarjeta: "Tarjeta (Wompi)"
+    }[pedido.metodo_pago] || pedido.metodo_pago;
+
+    const entrega = {
+      casa: "Entrega a domicilio",
+      agencia: "Retiro en agencia",
+      retiro: "Retiro en punto"
+    }[pedido.tipo_entrega] || pedido.tipo_entrega;
+
+    cont.innerHTML = `
+      <div class="confirmacion">
+        <div class="sello-ok">✓</div>
+        <h1>¡Pedido registrado!</h1>
+        <p class="numero-pedido">${pedido.numero}</p>
+        ${pedido.repetido ? '<p class="nota-pie">Este pedido ya existía (reintento detectado). No se duplicó.</p>' : ""}
+
+        <div class="tarjeta-confirmacion">
+          <div class="linea-total"><span>Cliente</span><span>${pedido.nombre}</span></div>
+          <div class="linea-total"><span>Teléfono</span><span>${pedido.telefono}</span></div>
+          <div class="linea-total"><span>Entrega</span><span>${entrega}</span></div>
+          <div class="linea-total"><span>Pago</span><span>${metodo}</span></div>
+          <hr style="border:none;border-top:1px solid var(--superficie-2);margin:12px 0">
+          <div class="linea-total"><span>Subtotal</span><span>${dinero(pedido.subtotal)}</span></div>
+          ${pedido.descuento > 0 ? `<div class="linea-total"><span>Descuento</span><span>−${dinero(pedido.descuento)}</span></div>` : ""}
+          <div class="linea-total"><span>Envío</span><span>${pedido.envio === 0 ? "Gratis" : dinero(pedido.envio)}</span></div>
+          <div class="linea-total gran"><span>Total</span><span>${dinero(pedido.total)}</span></div>
+        </div>
+
+        <p class="nota-pie">
+          Guarda tu número de pedido. Te contactaremos por WhatsApp al
+          ${pedido.telefono} para coordinar la entrega.
+        </p>
+
+        <a href="index.html" class="btn-primario" style="display:inline-block;width:auto;padding:14px 28px;text-decoration:none;text-align:center;">
+          Volver al catálogo
+        </a>
+      </div>`;
+  })();
+  </script>
+</body>
+</html>

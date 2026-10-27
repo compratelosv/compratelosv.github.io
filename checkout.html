@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es-SV">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — Compratelosv</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#ff3300">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/estilos.css">
+</head>
+<body>
+
+  <div class="aviso-demo">
+    ⚠ Entorno de demostración — no procesa pagos reales
+  </div>
+
+  <header class="sitio">
+    <div class="barra">
+      <a href="index.html" class="logo">
+        COMPRATE<span>LO</span>SV <span class="badge-dev">DEV</span>
+      </a>
+      <nav class="principal" aria-label="Navegación principal">
+        <a href="index.html">← Seguir comprando</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <div class="titulo-seccion">
+      <h2>Finalizar compra</h2>
+      <span class="conteo" id="paso-indicador">paso 1 de 2</span>
+    </div>
+
+    <div class="checkout-grid">
+
+      <!-- ---------------- FORMULARIO ---------------- -->
+      <form id="form-checkout" novalidate>
+
+        <!-- 1. CONTACTO -->
+        <fieldset class="bloque">
+          <legend>1 · Datos de contacto</legend>
+
+          <div class="campo">
+            <label for="nombre">Nombre completo *</label>
+            <input type="text" id="nombre" name="nombre" autocomplete="name"
+                   required minlength="2" maxlength="120"
+                   placeholder="Como aparece en tu DUI">
+            <span class="error-campo" data-error="nombre"></span>
+          </div>
+
+          <div class="fila-2">
+            <div class="campo">
+              <label for="telefono">Teléfono / WhatsApp *</label>
+              <input type="tel" id="telefono" name="telefono" autocomplete="tel"
+                     required minlength="7" maxlength="20"
+                     placeholder="7000 0000" inputmode="tel">
+              <span class="error-campo" data-error="telefono"></span>
+            </div>
+
+            <div class="campo">
+              <label for="email">Correo (opcional)</label>
+              <input type="email" id="email" name="email" autocomplete="email"
+                     maxlength="160" placeholder="tu@correo.com">
+              <span class="error-campo" data-error="email"></span>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- 2. ENTREGA -->
+        <fieldset class="bloque">
+          <legend>2 · ¿Dónde quieres recibir?</legend>
+
+          <div class="opciones-radio" id="opciones-entrega">
+            <label class="opcion">
+              <input type="radio" name="tipo_entrega" value="casa" checked>
+              <span class="opcion-cuerpo">
+                <strong>Entrega a tu casa</strong>
+                <small>$3.00 · todo el país</small>
+              </span>
+            </label>
+
+            <label class="opcion">
+              <input type="radio" name="tipo_entrega" value="agencia">
+              <span class="opcion-cuerpo">
+                <strong>Agencia cercana</strong>
+                <small>$2.50 · retiras en agencia</small>
+              </span>
+            </label>
+
+            <label class="opcion">
+              <input type="radio" name="tipo_entrega" value="retiro">
+              <span class="opcion-cuerpo">
+                <strong>Retiro en punto</strong>
+                <small>$0.00 · coordinamos por WhatsApp</small>
+              </span>
+            </label>
+          </div>
+
+          <div id="campos-direccion" class="sub-bloque">
+            <div class="campo">
+              <label for="departamento">Departamento *</label>
+              <select id="departamento" name="departamento">
+                <option value="">Selecciona…</option>
+                <option>San Salvador</option>
+                <option>La Libertad</option>
+                <option>Santa Ana</option>
+                <option>San Miguel</option>
+                <option>Sonsonate</option>
+                <option>Usulután</option>
+                <option>La Paz</option>
+                <option>Chalatenango</option>
+                <option>Cuscatlán</option>
+                <option>La Unión</option>
+                <option>Morazán</option>
+                <option>San Vicente</option>
+                <option>Ahuachapán</option>
+                <option>Cabañas</option>
+              </select>
+              <span class="error-campo" data-error="departamento"></span>
+            </div>
+
+            <div class="campo">
+              <label for="municipio">Municipio *</label>
+              <input type="text" id="municipio" name="municipio" maxlength="80"
+                     placeholder="Ej. San Salvador">
+              <span class="error-campo" data-error="municipio"></span>
+            </div>
+
+            <div class="campo">
+              <label for="direccion">Dirección exacta *</label>
+              <textarea id="direccion" name="direccion" rows="3" maxlength="300"
+                        placeholder="Calle, número, colonia, casa/apartamento"></textarea>
+              <span class="error-campo" data-error="direccion"></span>
+            </div>
+
+            <div class="campo">
+              <label for="referencia">Punto de referencia</label>
+              <input type="text" id="referencia" name="referencia" maxlength="200"
+                     placeholder="Ej. frente a la farmacia, portón negro">
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- 3. PAGO -->
+        <fieldset class="bloque">
+          <legend>3 · ¿Cómo quieres pagar?</legend>
+
+          <div class="opciones-radio">
+            <label class="opcion">
+              <input type="radio" name="metodo_pago" value="contraentrega" checked>
+              <span class="opcion-cuerpo">
+                <strong>Pago contra entrega</strong>
+                <small>Pagas al recibir</small>
+              </span>
+            </label>
+
+            <label class="opcion">
+              <input type="radio" name="metodo_pago" value="transferencia">
+              <span class="opcion-cuerpo">
+                <strong>Transferencia bancaria</strong>
+                <small>Te enviamos los datos por WhatsApp</small>
+              </span>
+            </label>
+
+            <label class="opcion opcion-deshabilitada">
+              <input type="radio" name="metodo_pago" value="tarjeta" disabled>
+              <span class="opcion-cuerpo">
+                <strong>Tarjeta · Wompi</strong>
+                <small>No disponible — pasarela pendiente de aprobación</small>
+              </span>
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- 4. CUPÓN -->
+        <fieldset class="bloque">
+          <legend>4 · ¿Tienes un cupón?</legend>
+          <div class="campo">
+            <label for="cupon">Código de cupón</label>
+            <input type="text" id="cupon" name="cupon_codigo" maxlength="40"
+                   placeholder="Opcional" style="text-transform:uppercase">
+            <span class="error-campo" data-error="cupon_codigo"></span>
+          </div>
+        </fieldset>
+
+        <p id="mensaje-error" class="mensaje-error oculto" role="alert"></p>
+
+        <button type="submit" class="btn-primario" id="btn-confirmar">
+          Confirmar pedido
+        </button>
+
+        <p class="nota-pie">
+          Al confirmar aceptas nuestras políticas de envío y devolución.
+          Este entorno es de prueba: no se cobra dinero real.
+        </p>
+      </form>
+
+      <!-- ---------------- RESUMEN ---------------- -->
+      <aside class="resumen" aria-label="Resumen del pedido">
+        <h3>Tu pedido</h3>
+        <div id="resumen-items"></div>
+
+        <div class="linea-total">
+          <span>Subtotal</span>
+          <span id="r-subtotal">$0.00</span>
+        </div>
+        <div class="linea-total">
+          <span>Envío</span>
+          <span id="r-envio">$3.00</span>
+        </div>
+        <div class="linea-total oculto" id="fila-descuento">
+          <span>Descuento</span>
+          <span id="r-descuento">−$0.00</span>
+        </div>
+        <div class="linea-total gran">
+          <span>Total</span>
+          <span id="r-total">$0.00</span>
+        </div>
+
+        <p class="nota-pie">
+          Los precios se validan en el servidor al confirmar.
+        </p>
+      </aside>
+
+    </div>
+  </main>
+
+  <footer class="sitio">
+    <div class="legal" style="max-width:var(--max-ancho);margin:0 auto;">
+      © 2026 Compratelosv — entorno de demostración. No procesa pagos reales.
+    </div>
+  </footer>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/checkout.js"></script>
+</body>
+</html>
