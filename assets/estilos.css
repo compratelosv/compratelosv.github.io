@@ -1449,3 +1449,29 @@ footer .legal {
   margin: 0 0 14px;
   line-height: 1.5;
 }
+
+
+/* ---- Requisitos de contraseña (auth.html) ---- */
+.requisitos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 4px 0 16px;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  color: var(--texto-tenue);
+}
+
+.requisitos span::before {
+  content: "○ ";
+  color: var(--borde);
+}
+
+.requisitos span.cumplido {
+  color: #3fb950;
+}
+
+.requisitos span.cumplido::before {
+  content: "● ";
+  color: #3fb950;
+}

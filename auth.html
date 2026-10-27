@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es-SV">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear contraseña — Compratelosv</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#ff3300">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/estilos.css">
+</head>
+<body class="admin-body">
+
+  <div class="aviso-demo">⚠ Panel de administración — Compratelosv</div>
+
+  <section class="pantalla-login">
+    <div class="caja-login" id="caja">
+
+      <h1>COMPRATE<span>LO</span>SV</h1>
+      <p class="subtitulo" id="subtitulo">Verificando enlace…</p>
+
+      <div id="cargando">
+        <p class="nota-pie">Un momento, estamos validando tu enlace.</p>
+      </div>
+
+      <!-- FORM: crear / cambiar contraseña -->
+      <form id="form-password" class="oculto" novalidate>
+        <div class="campo">
+          <label for="nueva">Nueva contraseña</label>
+          <input type="password" id="nueva" autocomplete="new-password"
+                 minlength="8" required placeholder="Mínimo 8 caracteres">
+        </div>
+
+        <div class="campo">
+          <label for="repetir">Repite la contraseña</label>
+          <input type="password" id="repetir" autocomplete="new-password"
+                 minlength="8" required placeholder="Repite la contraseña">
+        </div>
+
+        <div id="requisitos" class="requisitos">
+          <span data-req="len">8+ caracteres</span>
+          <span data-req="mayus">Una mayúscula</span>
+          <span data-req="minus">Una minúscula</span>
+          <span data-req="num">Un número</span>
+          <span data-req="match">Coinciden</span>
+        </div>
+
+        <p id="msg-error" class="mensaje-error oculto" role="alert"></p>
+        <p id="msg-ok" class="mensaje-info oculto" role="status"></p>
+
+        <button type="submit" class="btn-primario" id="btn-guardar">
+          Guardar contraseña
+        </button>
+      </form>
+
+      <!-- ESTADO: enlace inválido o ya usado -->
+      <div id="bloque-error" class="oculto">
+        <p id="texto-error" class="mensaje-error"></p>
+        <a href="admin.html" class="btn-primario"
+           style="display:block;text-align:center;text-decoration:none;padding:14px;margin-top:8px;">
+          Ir al panel
+        </a>
+        <p class="nota-pie">
+          Si el enlace ya expiró, pide uno nuevo desde
+          <strong>admin.html → ¿Olvidaste tu contraseña?</strong>
+        </p>
+      </div>
+
+      <!-- ESTADO: guardado con éxito -->
+      <div id="bloque-exito" class="oculto">
+        <p class="mensaje-info" id="texto-exito">
+          Contraseña guardada. Ya puedes entrar al panel.
+        </p>
+        <a href="admin.html" class="btn-primario"
+           style="display:block;text-align:center;text-decoration:none;padding:14px;margin-top:8px;">
+          Entrar al panel
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/auth.js"></script>
+</body>
+</html>

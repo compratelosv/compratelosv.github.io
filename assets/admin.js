@@ -103,7 +103,12 @@ async function recuperarContrasena(email) {
       apikey: cfg().SUPABASE_ANON_KEY,
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ email })
+    body: JSON.stringify({
+      email,
+      // Los enlaces del correo deben aterrizar en auth.html,
+      // que sí sabe leer el token del fragmento y pedir la contraseña.
+      redirect_to: new URL("auth.html", window.location.href).href
+    })
   });
   if (!res.ok) {
     const d = await res.json().catch(() => ({}));
