@@ -34,8 +34,8 @@ Wompi · Enlace de Pago + webhook HMAC
 | **0. Estructura + UI** | Catálogo, filtros, carrito responsive | ✅ **VERIFICADO** |
 | **1. Base de datos** | 7 tablas, RLS, RPC atómica | ✅ **VERIFICADO** |
 | **1b. Catálogo desde BD** | Frontend lee de Supabase con fallback | ✅ **VERIFICADO** |
-| **2. Checkout** | Formulario de envío + crear pedido vía RPC | 🔶 SIGUIENTE |
-| **3. Auth** | Registro, login, verificación por correo | ⬜ PLANIFICADO |
+| **2. Checkout** | Formulario de envío + pedido vía RPC + confirmación | ✅ **VERIFICADO** |
+| **3. Auth** | Registro, login, verificación por correo | 🔶 SIGUIENTE |
 | **4. Cupones / referidos** | Sistema del PDF de BARATUSS | ⬜ PLANIFICADO |
 | **5. Pagos Wompi** | Enlace de pago + webhook firmado | ⛔ BLOQUEADO (comercio no aprobado) |
 | **6. Verificación WhatsApp** | Código por WhatsApp | ⛔ BLOQUEADO (API de pago) |
@@ -85,10 +85,13 @@ El bloque `REVERT` al final de `001` está comentado y marcado como destructivo.
 
 ```
 index.html                  Catálogo
+checkout.html               Formulario de pedido
+confirmacion.html           Pedido registrado
 assets/
   config.js                 URL + anon key (ambas públicas)
   estilos.css               Diseño brutalista · variables en :root
   tienda.js                 Catálogo, filtros, carrito
+  checkout.js               Validación + llamada a la RPC
   thumbs/                   21 placeholders SVG
 data/productos.json         Fallback local de demo
 db/                         Migraciones versionadas
@@ -129,6 +132,36 @@ Toda la identidad visual está en `assets/estilos.css`, bloque `:root`:
 ```
 
 Cambiar esas dos variables reestiliza el sitio completo.
+
+---
+
+## Flujo de compra (verificado end-to-end)
+
+```
+index.html  →  carrito (localStorage)  →  checkout.html  →  RPC  →  confirmacion.html
+```
+
+| Paso | Qué hace |
+|---|---|
+| **Catálogo** | Lee productos de Supabase (fallback a JSON si falla) |
+| **Carrito** | Persistente en `localStorage`; valida stock local |
+| **Checkout** | Contacto, entrega, pago, cupón; recalcula envío en vivo |
+| **Validación** | Marca **todos** los campos inválidos a la vez y enfoca el primero |
+| **Pedido** | `POST /rpc/shop_crear_pedido` con `idempotency_key` (UUID v4) |
+| **Confirmación** | Número de pedido, totales y detalle desde la respuesta de la BD |
+
+### Protecciones probadas contra la base de datos real
+
+| Prueba | Resultado |
+|---|---|
+| Comprar producto con `stock = 0` | ✅ `P0001: Sin stock suficiente. Disponible: 0` |
+| Comprar 2 unidades de un producto con `stock = 1` | ✅ `P0001: Disponible: 1` |
+| Reintentar el mismo pedido 3 veces | ✅ mismo `numero`, `repetido: true`, **sin duplicar** |
+| Stock tras compra válida | ✅ descontado atómicamente (1 → 0) |
+| Total calculado en el servidor | ✅ `$37.00 + $3.00 = $40.00`, coincide con la UI |
+
+⚠️ El total **no** se acepta desde el navegador: la función RPC lo recalcula
+leyendo `precio` y `stock` de la base de datos.
 
 ---
 
@@ -186,3 +219,4 @@ Verificado con `grep`: no hay ninguna llave `service_role` ni `sb_secret_` en el
 
 - **2026-10-26** — Estructura inicial, 20 productos demo, 21 placeholders, catálogo + carrito.
 - **2026-10-26** — Esquema Supabase (7 tablas + RLS + RPC), 20 productos cargados, frontend conectado y verificado en producción.
+- **2026-10-26** — Checkout completo: pedidos reales vía RPC, idempotencia, confirmación con número de pedido. E2E verificado en producción.
