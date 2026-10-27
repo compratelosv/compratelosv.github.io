@@ -241,9 +241,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // `err` vive dentro del handler de submit; esta función se usa en todo
+  // el bloque, así que resuelve el elemento por su cuenta.
   function mostrarError(m) {
-    err.textContent = m;
-    err.classList.remove("oculto");
+    const el = $("#msg-error");
+    if (!el) return;
+    el.textContent = m;
+    el.classList.remove("oculto");
   }
 
   iniciar();
