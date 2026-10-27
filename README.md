@@ -1,5 +1,9 @@
 # Compratelosv — Tienda en línea (DEMO con Supabase)
 
+> 📌 **Enlaces de correo** (invitación / recuperación): el token viaja en el
+> fragmento de la URL (`#access_token=…`). El *Site URL* de Supabase debe apuntar
+> a **`https://compratelosv.github.io/auth.html`**, no a la raíz ni a `localhost`.
+
 > ⚠️ **ENTORNO DE DEMOSTRACIÓN.**
 > Los 20 productos son **ficticios** (`Producto 1`, `Producto 2`…).
 > Las imágenes son **placeholders SVG generados**.
@@ -91,12 +95,14 @@ index.html                  Catálogo
 checkout.html               Formulario de pedido
 confirmacion.html           Pedido registrado
 admin.html                  Panel de administración
+auth.html                   Aterrizaje de invitación / recuperación de contraseña
 assets/
   config.js                 URL + anon key (ambas públicas)
   estilos.css               Diseño brutalista · variables en :root
   tienda.js                 Catálogo, filtros, carrito
   checkout.js               Validación + llamada a la RPC
   admin.js                  Login Supabase Auth + gestión de productos y pedidos
+  auth.js                   Lee el token del hash y guarda la nueva contraseña
   thumbs/                   21 placeholders SVG
 data/productos.json         Fallback local de demo
 db/                         Migraciones versionadas
@@ -198,6 +204,17 @@ la base de datos devuelve `42501` aunque tenga sesión válida.
 | Ver pedidos | Tab **Pedidos**, con detalle de ítems y dirección |
 | Cambiar estado del pedido | Selector: pendiente → pagado → en preparación → enviado → entregado / cancelado / reembolsado |
 | Actualizar estado de pago | pendiente / aprobado / rechazado / reembolsado |
+
+### Flujo de contraseña
+
+1. Se invita al correo desde **Authentication → Users → Add user → Send invitation**.
+2. El correo abre `auth.html#access_token=…&type=invite`.
+3. `auth.js` valida el token contra `/auth/v1/user` y muestra el formulario.
+4. Se guarda con `PUT /auth/v1/user` y se limpia el token de la URL.
+5. Enlace caducado → mensaje claro + opción de pedir otro.
+
+> Si el *Site URL* está mal configurado (p. ej. `http://localhost:3000`), el enlace
+> del correo no lleva a ningún formulario. Es el error más común de esta integración.
 
 ### Dar acceso a un nuevo administrador
 
