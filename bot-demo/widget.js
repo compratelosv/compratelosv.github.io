@@ -8,8 +8,12 @@
 (function () {
   'use strict';
 
+  // El widget vive en /bot-demo/, pero se carga desde la raíz o desde ahí.
+  var SCRIPT_SRC = (document.currentScript && document.currentScript.src) || location.href;
+  var RAIZ = new URL('../', SCRIPT_SRC).href;
+
   var CFG = {
-    catalogoUrl: new URL('../data/productos.json', location.href).href,
+    catalogoUrl: RAIZ + 'data/productos.json',
     // Pendiente: número real de atención. Vacío => el bot lo dice honestamente.
     whatsapp: '',
     maxMensajes: 30,
@@ -322,7 +326,7 @@
     lista.forEach(function (p) {
       var c = el('div', 'cb-prod');
       var img = el('img');
-      img.src = '../' + p.imagen;
+      img.src = RAIZ + p.imagen;
       img.alt = '';
       img.loading = 'lazy';
       var txt = el('div', 'cb-prod-txt');
@@ -487,8 +491,23 @@
     };
   }
 
+  // No tapar el carrito lateral con el chat
+  function vigilarCarrito() {
+    var carrito = document.getElementById('panel-carrito');
+    if (!carrito) return;
+    function sync() {
+      var abiertoCarrito = carrito.classList.contains('abierto');
+      lanzador.style.visibility = abiertoCarrito ? 'hidden' : '';
+      if (abiertoCarrito && estado.abierto) cerrar();
+    }
+    new MutationObserver(sync).observe(carrito, { attributes: true, attributeFilter: ['class'] });
+    var btn = document.getElementById('btn-carrito');
+    if (btn) btn.addEventListener('click', function () { if (estado.abierto) cerrar(); });
+  }
+
   function init() {
     montar();
+    vigilarCarrito();
     cargarCatalogo()
       .then(function () { console.info('[bot-demo] catálogo cargado: ' + PRODUCTOS.length + ' piezas'); })
       .catch(function (e) {
