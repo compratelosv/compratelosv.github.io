@@ -626,6 +626,7 @@
         detalle: etiqueta + (nota ? ' · ' + nota : '') + ' · se reoferta sin consumir intento'
       });
     });
+    tu.punto = null;   // un turno sin viaje no conserva el punto fijado
     guardar();
     cerrarMotivo();
     render();

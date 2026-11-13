@@ -221,6 +221,17 @@
   }
   function puntoContrario(p) { return p === 'merliot' ? 'metro' : 'merliot'; }
 
+  // Regla: un turno sin pedidos activos libera su punto.
+  function limpiarPuntos(dia) {
+    if (!dia) return;
+    dia.turnos.forEach(function (tu) {
+      var activos = tu.clientes.filter(function (c) {
+        return c.estado !== 'cancelada' && c.estado !== 'reagendada';
+      }).length;
+      if (!activos) tu.punto = null;
+    });
+  }
+
   /* ---------- mis entregas ---------- */
   function misEntregas() {
     var out = [];
@@ -299,16 +310,20 @@
   function reagendar(slot) {
     if (!ACTUAL) return;
 
-    // quitar del turno original
-    var orig = ACTUAL.tu.clientes.indexOf(ACTUAL.c);
-    if (orig >= 0) ACTUAL.tu.clientes.splice(orig, 1);
+    // capturar el punto del destino ANTES de tocar la agenda
+    var puntoDestino = slot.tu.punto || ACTUAL.tu.punto || 'merliot';
+    var diaOrigen = ACTUAL.dia;
+    var tuOrigen = ACTUAL.tu;
 
-    // punto según reglas: si el turno destino ya tiene punto, debe ser ese
-    var punto = slot.tu.punto || ACTUAL.tu.punto || 'merliot';
+    // quitar del turno original
+    var orig = tuOrigen.clientes.indexOf(ACTUAL.c);
+    if (orig >= 0) tuOrigen.clientes.splice(orig, 1);
+
+    // fijar el punto del destino solo si estaba libre
     if (!slot.tu.punto) {
-      slot.tu.punto = punto;
+      slot.tu.punto = puntoDestino;
       var otro = slot.dia.turnos.filter(function (x) { return x.turno !== slot.tu.turno; })[0];
-      if (otro && !otro.punto) otro.punto = puntoContrario(punto);
+      if (otro && !otro.punto && otro !== tuOrigen) otro.punto = puntoContrario(puntoDestino);
     }
 
     ACTUAL.c.franja = slot.franja;
@@ -316,17 +331,22 @@
     ACTUAL.c.intentos = (ACTUAL.c.intentos || 0) + 1;
     ACTUAL.c.eventos.push({
       ts: 'Reprogramado',
-      detalle: fechaLarga(slot.dia.fecha) + ' · ' + slot.franja + ' · ' + PUNTOS[punto] + ' (intento ' + ACTUAL.c.intentos + ')'
+      detalle: fechaLarga(slot.dia.fecha) + ' · ' + slot.franja + ' · ' + PUNTOS[slot.tu.punto] + ' (intento ' + ACTUAL.c.intentos + ')'
     });
     slot.tu.clientes.push(ACTUAL.c);
+
+    // liberar los turnos que quedaron sin pedidos (R16)
+    limpiarPuntos(diaOrigen);
+    if (slot.dia !== diaOrigen) limpiarPuntos(slot.dia);
+
     guardar();
 
     var max = ACTUAL.c.metodo === 'tarjeta' ? 2 : 1;
     var resto = max - ACTUAL.c.intentos;
-    var msg = 'Entrega movida al ' + fechaLarga(slot.dia.fecha) + ' a las ' + slot.franja + ' en ' + PUNTOS[punto] +
+    var msg = 'Entrega movida al ' + fechaLarga(slot.dia.fecha) + ' a las ' + slot.franja + ' en ' + PUNTOS[slot.tu.punto] +
       '. ' + (resto > 0 ? 'Te queda' + (resto > 1 ? 'n ' + resto + ' intentos' : ' 1 intento') + '.' : 'Este era tu último intento.');
-    try { sessionStorage.setItem('clv-flash', msg); } catch (e) { /* sin storage */ }
-    location.reload();
+    render();
+    banner(msg);
   }
 
   /* ---------- render ---------- */
@@ -585,14 +605,6 @@
   }
 
   render();
-
-  try {
-    var flash = sessionStorage.getItem('clv-flash');
-    if (flash) {
-      sessionStorage.removeItem('clv-flash');
-      banner(flash);
-    }
-  } catch (e) { /* sin storage */ }
 })();
 </script>
 </body>

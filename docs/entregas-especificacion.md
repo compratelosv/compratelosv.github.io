@@ -23,6 +23,7 @@
 | R13 | Intentos | Tarjeta 2 · efectivo/contraentrega 1 |
 | R14 | Reembolso | Agotados los turnos con tarjeta: devolución menos **20%** |
 | R15 | Modalidad | Solo retiro en punto. **Sin costo de envío** |
+| R16 | Turno sin pedidos | Si un turno se queda sin pedidos activos (todos cancelados o reagendados), **libera su punto** y vuelve a estar libre; la alternancia se recalcula |
 
 **Riesgo del modelo:** con R5, un día completo son 12 entregas en 6 h de ruta (3 h por turno), es decir una entrega cada 30 min sin margen para tráfico. Es viable pero ajustado; el cupo es configurable por turno si se necesita bajar.
 
@@ -120,6 +121,7 @@ Si un turno queda en 0 confirmados, se marca el viaje como cancelado y se reofer
 | Cliente con tarjeta agota turnos | Reembolso 80%, requiere referencia de depósito manual |
 | Cliente en efectivo agota turnos | Cancelación sin reembolso (no pagó) |
 | El admin cancela un turno entero | Reoferta a todos y no consume intento del cliente (no es su culpa) |
+| Un turno se queda sin pedidos activos | Se libera el punto (R16) y el turno admite cualquier punto que respete la alternancia |
 | Cliente no puede ir y avisa antes con tiempo | Puede reagendar sin consumir intento si es >24 h antes |
 
 ---
