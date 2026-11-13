@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo · Asistente de ayuda — Compratelosv</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Prueba técnica del widget de atención al cliente de Compratelosv.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/estilos.css">
+<link rel="stylesheet" href="widget.css">
+<style>
+  .demo-aviso {
+    background: #ff3300;
+    color: #0a0a0a;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 8px 16px;
+  }
+  .demo-hero { padding: 48px 24px 24px; max-width: 900px; margin: 0 auto; }
+  .demo-hero h1 {
+    font-size: clamp(26px, 5vw, 44px);
+    line-height: 1.1;
+    letter-spacing: -1px;
+    color: #f0f0f0;
+    margin: 0 0 12px;
+    text-transform: uppercase;
+  }
+  .demo-hero h1 span { color: #ff3300; }
+  .demo-hero p { color: #8a8a8a; max-width: 62ch; margin: 0 0 8px; font-size: 14px; }
+  .demo-bloque { max-width: 1100px; margin: 0 auto; padding: 24px; }
+  .demo-bloque h2 {
+    font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+    color: #b0b0b0; border-bottom: 2px solid #2a2a2a; padding-bottom: 8px; margin: 0 0 18px;
+  }
+  .demo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
+  .demo-card { border: 2px solid #2a2a2a; background: #131313; }
+  .demo-card img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; filter: grayscale(.2); }
+  .demo-card .info { padding: 10px; border-top: 2px solid #2a2a2a; }
+  .demo-card .nom { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #e0e0e0; display: block; }
+  .demo-card .meta { font-size: 10px; color: #8a8a8a; display: block; margin-top: 3px; }
+  .demo-card .precio { font-size: 13px; font-weight: 700; color: #ff3300; display: block; margin-top: 5px; }
+  .demo-tres { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+  .demo-caja { border: 2px solid #2a2a2a; background: #131313; padding: 16px; }
+  .demo-caja h3 { margin: 0 0 10px; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #ff3300; }
+  .demo-caja ul { margin: 0; padding-left: 18px; font-size: 12px; color: #b0b0b0; line-height: 1.7; }
+  .demo-btn {
+    background: #0a0a0a; color: #f0f0f0; border: 2px solid #ff3300;
+    font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; padding: 12px 18px; cursor: pointer;
+  }
+  .demo-btn:hover { background: #ff3300; color: #0a0a0a; }
+  #resultados { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+  .demo-t { display: flex; gap: 10px; align-items: baseline; font-size: 12px; padding: 7px 10px; border-left: 3px solid #2a2a2a; background: #111; }
+  .demo-t .ok { color: #00c853; font-weight: 700; }
+  .demo-t .ko { color: #ff3300; font-weight: 700; }
+  .demo-t .caso { color: #b0b0b0; flex: 1 1 auto; }
+  .demo-t .det { color: #6a6a6a; font-size: 10px; }
+  .demo-resumen { margin-top: 10px; font-size: 12px; color: #f0f0f0; }
+  footer.demo-pie { border-top: 2px solid #2a2a2a; margin-top: 40px; padding: 20px 24px 90px; font-size: 11px; color: #6a6a6a; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="demo-aviso">Demo técnica · entorno de pruebas · asistente sin backend</div>
+
+<header class="sitio">
+  <div class="barra">
+    <a class="logo" href="../index.html">COMPRATELOSV</a>
+    <nav><a href="../index.html">Tienda</a></nav>
+  </div>
+</header>
+
+<section class="demo-hero">
+  <h1>Asistente de<br><span>atención al cliente</span></h1>
+  <p>Esta página es la prueba del widget: responde con el catálogo real del sitio (precios, tallas, colores y disponibilidad publicados), sin backend y sin claves.</p>
+  <p>Abre la burbuja <strong style="color:#ff3300">AYUDA</strong> abajo a la derecha. Todo lo que ves aquí corre en tu navegador.</p>
+</section>
+
+<section class="demo-bloque">
+  <h2>Catálogo que el bot está leyendo</h2>
+  <div class="demo-grid" id="grid"></div>
+</section>
+
+<section class="demo-bloque">
+  <h2>Qué es real y qué no</h2>
+  <div class="demo-tres">
+    <div class="demo-caja">
+      <h3>Real</h3>
+      <ul>
+        <li>Catálogo, precios, tallas, colores y stock: <code>data/productos.json</code> del repo.</li>
+        <li>Tarifas de envío: 3.00 / 2.50 / 0.00 del sitio.</li>
+        <li>Método de pago mencionado: Wompi.</li>
+        <li>Diseño: tokens de marca (Space Mono, #ff3300).</li>
+      </ul>
+    </div>
+    <div class="demo-caja">
+      <h3>Simulado</h3>
+      <ul>
+        <li>El motor son reglas deterministas, no un modelo de lenguaje.</li>
+        <li>El "escribiendo…" es un retardo artificial.</li>
+        <li>No hay memoria en servidor: solo en la sesión del navegador.</li>
+        <li>El canal humano no está conectado.</li>
+      </ul>
+    </div>
+    <div class="demo-caja">
+      <h3>Falta para producción</h3>
+      <ul>
+        <li>Edge Function con la clave del modelo en secrets.</li>
+        <li>Rate limit por IP y por sesión.</li>
+        <li>Tablas de conversación con RLS cerrado.</li>
+        <li>Política de cambios y número de WhatsApp reales.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="demo-bloque">
+  <h2>Pruebas automatizadas</h2>
+  <p style="font-size:12px;color:#8a8a8a;margin:0 0 12px">Ejecuta los casos contra el motor y muestra el resultado real, en vivo.</p>
+  <button class="demo-btn" id="btn-probar" type="button">Ejecutar pruebas</button>
+  <div id="resultados" aria-live="polite"></div>
+</section>
+
+<footer class="demo-pie">
+  Compratelosv · demo técnica. No es la tienda en producción.
+</footer>
+
+<script src="widget.js"></script>
+<script>
+(function () {
+  // --- catálogo visible ---
+  fetch('../data/productos.json', { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      var arr = Array.isArray(d) ? d : (d.productos || []);
+      var grid = document.getElementById('grid');
+      arr.slice(0, 8).forEach(function (p) {
+        var a = document.createElement('a');
+        a.className = 'demo-card';
+        a.href = '../index.html';
+        a.style.textDecoration = 'none';
+        var img = document.createElement('img');
+        img.src = '../' + p.imagen;
+        img.alt = p.nombre;
+        img.loading = 'lazy';
+        var info = document.createElement('div');
+        info.className = 'info';
+        var n = document.createElement('span'); n.className = 'nom'; n.textContent = p.nombre;
+        var m = document.createElement('span'); m.className = 'meta';
+        m.textContent = [p.talla ? 'Talla ' + p.talla : '', p.color, p.condicion].filter(Boolean).join(' · ');
+        var pr = document.createElement('span'); pr.className = 'precio'; pr.textContent = '$' + Number(p.precio).toFixed(2);
+        info.appendChild(n); info.appendChild(m); info.appendChild(pr);
+        a.appendChild(img); a.appendChild(info);
+        grid.appendChild(a);
+      });
+    })
+    .catch(function (e) {
+      document.getElementById('grid').textContent = 'No se pudo cargar el catálogo: ' + e.message;
+    });
+
+  // --- pruebas ---
+  var CASOS = [
+    { q: 'hola', espera: /asistente de Compratelosv/i, nombre: 'saludo inicial' },
+    { q: '¿cuánto cuesta el envío?', espera: /\$3\.00/, nombre: 'tarifa de envío real' },
+    { q: '¿cómo pago?', espera: /Wompi/, nombre: 'método de pago' },
+    { q: 'busco talla M', espera: /talla M/i, nombre: 'filtro por talla' },
+    { q: 'algo negro', espera: /negro/i, nombre: 'filtro por color' },
+    { q: 'skincare', espera: /skincare|crema|serum|facial/i, nombre: 'categoría skincare' },
+    { q: '¿hacen cambios?', espera: /no tengo la política/i, nombre: 'no inventa políticas' },
+    { q: 'quiero un iphone 15', espera: /No encontré eso/i, nombre: 'no inventa productos' },
+    { q: '¿tienen envío gratis?', espera: /\$|envío/i, nombre: 'no promete envío gratis' },
+    { q: 'crema facial', espera: /Crema facial/i, nombre: 'color "crema" no confunde skincare' },
+    { q: 'producto 7', espera: /pieza #7/i, nombre: 'búsqueda por número de pieza' },
+    { q: 'busco un vestido', espera: /No encontré/i, nombre: 'no lista toda la categoría por error' },
+    { q: 'quiero pagar con bitcoin', espera: /No manejo ese método/i, nombre: 'no inventa métodos de pago' },
+    { q: '¿hay algo agotado?', espera: /agotada|agotado/i, nombre: 'reporta agotados reales' },
+    { q: '<img src=x onerror=alert(1)>', espera: /./, nombre: 'entrada hostil no ejecuta HTML' }
+  ];
+
+  function ejecutar() {
+    var out = document.getElementById('resultados');
+    out.textContent = '';
+    var bus = window.__BOT_DEMO;
+    if (!bus) {
+      out.textContent = 'El motor aún no está listo (catálogo cargando). Espera un segundo.';
+      return;
+    }
+    var ok = 0;
+    CASOS.forEach(function (c) {
+      var r = bus.responder(c.q);
+      var texto = (r.texto || '') + ' ' + (r.productos || []).map(function (p) {
+        return [p.nombre, p.subtipo, p.talla, p.color, p.precio].filter(Boolean).join(' ');
+      }).join(' ');
+      var pasa = c.espera.test(texto);
+      // caso especial: envío gratis no debe afirmarse
+      if (c.nombre === 'no promete envío gratis' && /gratis/i.test(r.texto || '')) pasa = false;
+      if (pasa) ok++;
+
+      var row = document.createElement('div');
+      row.className = 'demo-t';
+      var st = document.createElement('span');
+      st.className = pasa ? 'ok' : 'ko';
+      st.textContent = pasa ? 'PASA' : 'FALLA';
+      var cs = document.createElement('span');
+      cs.className = 'caso';
+      cs.textContent = c.nombre + ' — "' + c.q + '"';
+      var dt = document.createElement('span');
+      dt.className = 'det';
+      dt.textContent = (r.texto || '').replace(/\s+/g, ' ').slice(0, 60) + '…';
+      row.appendChild(st); row.appendChild(cs); row.appendChild(dt);
+      out.appendChild(row);
+    });
+    var res = document.createElement('div');
+    res.className = 'demo-resumen';
+    res.textContent = ok + '/' + CASOS.length + ' casos pasan' + (ok === CASOS.length ? ' — sin fallos.' : '.');
+    out.appendChild(res);
+  }
+
+  document.getElementById('btn-probar').addEventListener('click', ejecutar);
+  window.addEventListener('load', function () { setTimeout(ejecutar, 400); });
+})();
+</script>
+</body>
+</html>
