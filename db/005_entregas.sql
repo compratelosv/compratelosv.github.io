@@ -27,6 +27,8 @@
 --   drop table if exists public.shop_agenda_dia cascade;
 --   drop table if exists public.shop_turnos cascade;
 --   drop table if exists public.shop_puntos cascade;
+--   drop function if exists public.shop_trg_liberar_punto();
+--   drop function if exists public.shop_liberar_punto(date,text);
 --   drop function if exists public.shop_reservar_franja(uuid,date,text,time,uuid);
 --   drop function if exists public.shop_disponibilidad(date,date);
 -- ============================================================================
@@ -435,7 +437,58 @@ end;
 $$;
 
 -- ---------------------------------------------------------------------------
--- 10. RLS
+-- 10. LIBERAR EL PUNTO CUANDO EL TURNO SE QUEDA SIN PEDIDOS (R16)
+-- ---------------------------------------------------------------------------
+create or replace function public.shop_liberar_punto(p_fecha date, p_turno text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not exists (
+    select 1 from public.shop_entregas e
+     where e.fecha = p_fecha
+       and e.turno = p_turno
+       and e.estado not in ('cancelada', 'reagendada')
+  ) then
+    update public.shop_agenda_dia
+       set punto_id = null,
+           estado = 'abierto',
+           actualizado_en = now()
+     where fecha = p_fecha
+       and turno = p_turno
+       and estado <> 'cerrado_manual';
+  end if;
+end;
+$$;
+
+create or replace function public.shop_trg_liberar_punto()
+returns trigger
+language plpgsql
+as $$
+begin
+  if tg_op = 'DELETE' then
+    perform public.shop_liberar_punto(old.fecha, old.turno);
+    return old;
+  end if;
+
+  if tg_op = 'UPDATE' and (old.fecha <> new.fecha or old.turno <> new.turno) then
+    perform public.shop_liberar_punto(old.fecha, old.turno);
+  end if;
+
+  perform public.shop_liberar_punto(new.fecha, new.turno);
+  return null;
+end;
+$$;
+
+drop trigger if exists trg_shop_entregas_liberar on public.shop_entregas;
+create trigger trg_shop_entregas_liberar
+  after insert or update or delete on public.shop_entregas
+  for each row execute function public.shop_trg_liberar_punto();
+
+-- ---------------------------------------------------------------------------
+-- 11. RLS
 -- ---------------------------------------------------------------------------
 alter table public.shop_puntos          enable row level security;
 alter table public.shop_turnos          enable row level security;
