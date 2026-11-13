@@ -141,6 +141,34 @@
   .p-cerrar-modal { margin-top: 14px; width: 100%; }
   .p-leyenda { margin-top: 22px; font-size: 10px; color: #5a5a5a; line-height: 1.8; }
   .p-leyenda b { color: #8a8a8a; }
+
+  /* vista compacta */
+  .p-compacto .p-cli { padding: 5px 14px; }
+  .p-compacto .p-meta { display: none; }
+  .p-compacto .p-nom { font-size: 11px; }
+  .p-compacto .p-hora small { display: none; }
+  .p-compacto .p-turno-head { padding: 8px 14px; }
+  .p-compacto .p-ocupacion { display: none; }
+  .p-compacto .p-pill { font-size: 7px; padding: 2px 5px; }
+
+  /* reembolso dentro del detalle */
+  .p-reembolso { border: 2px solid #ff3300; background: #1c0d09; padding: 10px 12px; margin: 12px 0; }
+  .p-reembolso h4 { margin: 0 0 8px; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: #ff3300; }
+  .p-reembolso .linea { display: flex; justify-content: space-between; font-size: 11px; color: #d5d5d5; padding: 2px 0; }
+  .p-reembolso .linea.total { border-top: 1px solid #4a2a20; margin-top: 6px; padding-top: 6px; font-weight: 700; color: #fff; }
+
+  .p-wa {
+    display: inline-block; margin-top: 6px; font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+    border: 2px solid #00c853; color: #00c853; padding: 6px 10px; text-decoration: none;
+  }
+  .p-wa:hover { background: #00c853; color: #0a0a0a; }
+  .p-notas { font-size: 11px; color: #b0b0b0; border-left: 3px solid #4a4a4a; padding: 6px 10px; margin: 8px 0; }
+  .p-motivo-sel, .p-motivo-nota {
+    width: 100%; background: #1a1a1a; border: 2px solid #4a4a4a; color: #f0f0f0;
+    font-family: inherit; font-size: 12px; padding: 9px 10px; margin-top: 6px;
+  }
+  .p-motivo-nota { min-height: 62px; resize: vertical; }
+  .p-etiqueta { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: #6a6a6a; display: block; margin-top: 12px; }
 </style>
 </head>
 <body>
@@ -153,6 +181,7 @@
     <span class="sub" id="hoy">—</span>
   </div>
   <div class="p-acciones">
+    <button class="p-btn" id="btn-compacto" type="button" aria-pressed="false">Vista compacta</button>
     <button class="p-btn" id="btn-corte" type="button">Simular 07:35 (corte)</button>
     <button class="p-btn" id="btn-reset" type="button">Reiniciar datos</button>
   </div>
@@ -179,8 +208,33 @@
     <h3 id="modal-titulo">Detalle</h3>
     <span class="dir" id="modal-dir"></span>
     <div class="p-detalle" id="modal-detalle"></div>
+    <div id="modal-extra"></div>
     <ul class="p-timeline" id="modal-timeline"></ul>
     <button class="p-btn p-cerrar-modal" id="btn-cerrar-modal" type="button">Cerrar</button>
+  </div>
+</div>
+
+<div class="p-modal" id="modal-motivo" role="dialog" aria-modal="true" aria-labelledby="motivo-titulo">
+  <div class="p-modal-box">
+    <h3 id="motivo-titulo">Cancelar turno</h3>
+    <span class="dir" id="motivo-dir"></span>
+    <label class="p-etiqueta" for="motivo-select">Motivo</label>
+    <select class="p-motivo-sel" id="motivo-select">
+      <option value="clima">Clima / lluvia</option>
+      <option value="emergencia">Emergencia personal</option>
+      <option value="vehiculo">Problema con el vehículo</option>
+      <option value="sin_confirmaciones">Nadie confirmó</option>
+      <option value="otro">Otro</option>
+    </select>
+    <label class="p-etiqueta" for="motivo-nota">Nota para el historial (opcional)</label>
+    <textarea class="p-motivo-nota" id="motivo-nota" placeholder="Ej. lluvia fuerte en Santa Tecla"></textarea>
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+      <button class="p-btn p-btn--danger" id="btn-motivo-ok" type="button">Confirmar cancelación</button>
+      <button class="p-btn" id="btn-motivo-cancel" type="button">Volver</button>
+    </div>
+    <p style="font-size:10px;color:#6a6a6a;margin:12px 0 0">
+      Los clientes afectados pasan a "Reagendada" y no se les consume intento.
+    </p>
   </div>
 </div>
 
@@ -188,7 +242,7 @@
 (function () {
   'use strict';
 
-  var CLAVE = 'clv-entregas-demo-v2';
+  var CLAVE = 'clv-entregas-demo-v4';   // subir versión aquí al cambiar el generador
   var PUNTOS = { merliot: 'Plaza Merliot', metro: 'Metrocentro' };
   var ESTADOS = {
     programada: 'Pendiente',
@@ -202,6 +256,14 @@
     'Lucía Franco', 'Marta Orellana', 'Carlos Huezo', 'Sofía Vides', 'Diego Rivas',
     'Elena Portillo', 'Miguel Sosa', 'Carmen Linares', 'Óscar Durán', 'Patricia Núñez',
     'Andrés Zelaya', 'Gabriela Sorto', 'Raúl Argueta', 'Verónica Castro', 'Héctor Molina'];
+
+  var NOTAS = [
+    'Llega con un niño, darle un minuto de margen.',
+    'Prefiere pagar en efectivo exacto.',
+    'Pidió que se le avise por llamada, no por mensaje.',
+    'Viene desde Santa Tecla, puede llegar 10 min tarde.',
+    'Recogerá en auto, no necesita estacionamiento.'
+  ];
 
   /* ---------- fechas hábiles ---------- */
   function proximasFechas(n) {
@@ -278,6 +340,7 @@
             total: Math.round((8 + rnd() * 40) * 100) / 100,
             intentos: rnd() < 0.12 ? 1 : 0,
             estado: estado,
+            notas: rnd() < 0.28 ? NOTAS[Math.floor(rnd() * NOTAS.length)] : '',
             eventos: [
               { ts: 'Reserva creada', detalle: 'Cliente eligió ' + h + ' en ' + PUNTOS[turno === 'manana' ? puntoManana : puntoTarde] }
             ]
@@ -287,6 +350,19 @@
         // una fecha concreta: turno sin ninguna confirmación (para mostrar el caso)
         if (i === 1 && turno === 'tarde') {
           clientes.forEach(function (c) { if (c.estado === 'confirmada') c.estado = 'programada'; });
+        }
+
+        // caso de ejemplo: cliente con tarjeta que agotó sus 2 intentos
+        if (i === 2 && turno === 'manana' && clientes.length) {
+          var ult = clientes[clientes.length - 1];
+          ult.estado = 'cancelada';
+          ult.metodo = 'tarjeta';
+          ult.intentos = 2;
+          ult.notas = ult.notas || NOTAS[0];
+          ult.eventos.push({ ts: '07:35 · corte sin respuesta', detalle: 'No confirmó la entrega' });
+          ult.eventos.push({ ts: 'Reoferta 1 expirada', detalle: '24 h sin elegir nuevo horario' });
+          ult.eventos.push({ ts: 'Reoferta 2 expirada', detalle: 'Agota sus 2 turnos' });
+          ult.eventos.push({ ts: 'Reembolso calculado', detalle: 'Se devuelve el 80% del total' });
         }
 
         return {
@@ -415,7 +491,7 @@
       var viaje = document.createElement('span');
       viaje.className = 'p-estado-viaje ' + (tu.cancelado ? 'p-viaje-cancel' : (confirmados ? 'p-viaje-si' : 'p-viaje-no'));
       viaje.textContent = tu.cancelado
-        ? 'Turno cancelado · reofertado'
+        ? 'Turno cancelado · ' + (tu.motivo || 'reofertado')
         : (confirmados ? 'Viaje confirmado · ' + confirmados + ' cliente' + (confirmados > 1 ? 's' : '')
                        : 'Sin confirmaciones · no se viaja');
       head.appendChild(viaje);
@@ -519,20 +595,46 @@
     banner._t = setTimeout(function () { b.classList.remove('ver'); }, 6000);
   }
 
+  var turnoPendiente = null;
+
   function cancelarTurno(tu) {
     var afectados = tu.clientes.filter(function (c) { return c.estado !== 'entregada'; }).length;
     if (!afectados) { banner('Ese turno no tiene clientes activos.'); return; }
-    if (!confirm('¿Cancelar el turno del ' + fechaSel + ' (' + (tu.turno === 'manana' ? 'mañana' : 'tarde') + ')?\n\nSe reofertarán ' + afectados + ' pedidos y NO se les consume intento.')) return;
+    turnoPendiente = tu;
+    $('#motivo-dir').textContent = fechaSel + ' · ' + (tu.turno === 'manana' ? 'mañana' : 'tarde') +
+      ' · ' + (tu.punto ? PUNTOS[tu.punto] : 'sin punto') + ' · ' + afectados + ' pedido(s) afectados';
+    $('#motivo-nota').value = '';
+    $('#modal-motivo').classList.add('ver');
+    $('#motivo-select').focus();
+  }
+
+  function aplicarCancelacion() {
+    var tu = turnoPendiente;
+    if (!tu) return;
+    var sel = $('#motivo-select');
+    var etiqueta = sel.options[sel.selectedIndex].textContent;
+    var nota = $('#motivo-nota').value.trim();
+    var afectados = tu.clientes.filter(function (c) { return c.estado !== 'entregada'; }).length;
 
     tu.cancelado = true;
+    tu.motivo = etiqueta.toLowerCase();
     tu.clientes.forEach(function (c) {
       if (c.estado === 'entregada') return;
       c.estado = 'reagendada';
-      c.eventos.push({ ts: 'Turno cancelado por el negocio', detalle: 'Se reoferta sin consumir intento' });
+      c.eventos.push({
+        ts: 'Turno cancelado por el negocio',
+        detalle: etiqueta + (nota ? ' · ' + nota : '') + ' · se reoferta sin consumir intento'
+      });
     });
     guardar();
+    cerrarMotivo();
     render();
-    banner('Turno cancelado. ' + afectados + ' pedidos reofertados sin consumir intento.');
+    banner('Turno cancelado (' + etiqueta.toLowerCase() + '). ' + afectados + ' pedidos reofertados sin consumir intento.');
+  }
+
+  function cerrarMotivo() {
+    $('#modal-motivo').classList.remove('ver');
+    turnoPendiente = null;
   }
 
   function simularCorte() {
@@ -577,6 +679,50 @@
       det.appendChild(d);
     });
 
+    var extra = $('#modal-extra');
+    extra.textContent = '';
+
+    if (c.notas) {
+      var n = document.createElement('div');
+      n.className = 'p-notas';
+      n.textContent = 'Nota: ' + c.notas;
+      extra.appendChild(n);
+    }
+
+    var wa = document.createElement('a');
+    wa.className = 'p-wa';
+    wa.href = 'https://wa.me/503' + c.telefono + '?text=' +
+      encodeURIComponent('Hola ' + c.cliente.split(' ')[0] + ', le escribimos de Compratelosv por su pedido ' + c.pedido + '.');
+    wa.target = '_blank';
+    wa.rel = 'noopener noreferrer';
+    wa.textContent = 'Escribir por WhatsApp';
+    extra.appendChild(wa);
+
+    if (c.estado === 'cancelada') {
+      var comision = Math.round(c.total * 0.2 * 100) / 100;
+      var devolver = Math.round((c.total - comision) * 100) / 100;
+      var r = document.createElement('div');
+      r.className = 'p-reembolso';
+      var h4 = document.createElement('h4');
+      h4.textContent = 'Reembolso por turnos agotados';
+      r.appendChild(h4);
+      [['Pagó', c.total], ['Comisión 20%', comision], ['A devolver', devolver]].forEach(function (l, idx) {
+        var d = document.createElement('div');
+        d.className = 'linea' + (idx === 2 ? ' total' : '');
+        var a = document.createElement('span'); a.textContent = l[0];
+        var b = document.createElement('span'); b.textContent = '$' + l[1].toFixed(2);
+        d.appendChild(a); d.appendChild(b);
+        r.appendChild(d);
+      });
+      var est = document.createElement('div');
+      est.className = 'linea';
+      var e1 = document.createElement('span'); e1.textContent = 'Depósito';
+      var e2 = document.createElement('span'); e2.textContent = 'pendiente';
+      est.appendChild(e1); est.appendChild(e2);
+      r.appendChild(est);
+      extra.appendChild(r);
+    }
+
     var tl = $('#modal-timeline');
     tl.textContent = '';
     c.eventos.forEach(function (e) {
@@ -601,6 +747,16 @@
 
   /* ---------- wiring ---------- */
   $('#btn-corte').addEventListener('click', simularCorte);
+  $('#btn-compacto').addEventListener('click', function () {
+    var on = document.body.classList.toggle('p-compacto');
+    this.setAttribute('aria-pressed', on ? 'true' : 'false');
+    this.textContent = on ? 'Vista normal' : 'Vista compacta';
+  });
+  $('#btn-motivo-ok').addEventListener('click', aplicarCancelacion);
+  $('#btn-motivo-cancel').addEventListener('click', cerrarMotivo);
+  $('#modal-motivo').addEventListener('click', function (e) {
+    if (e.target === $('#modal-motivo')) cerrarMotivo();
+  });
   $('#btn-reset').addEventListener('click', function () {
     if (!confirm('¿Reiniciar los datos de ejemplo? Se perderán tus cambios en esta demo.')) return;
     localStorage.removeItem(CLAVE);
@@ -611,7 +767,11 @@
   });
   $('#btn-cerrar-modal').addEventListener('click', cerrarModal);
   $('#modal').addEventListener('click', function (e) { if (e.target === $('#modal')) cerrarModal(); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') cerrarModal(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    cerrarModal();
+    if ($('#modal-motivo').classList.contains('ver')) cerrarMotivo();
+  });
 
   render();
 })();
