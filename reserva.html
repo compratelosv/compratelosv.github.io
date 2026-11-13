@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es-SV">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elige tu entrega — Compratelosv</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/estilos.css">
+<style>
+  .r-aviso {
+    background: #ff3300; color: #0a0a0a; font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; text-align: center; padding: 7px 14px;
+  }
+  .r-top {
+    position: sticky; top: 0; z-index: 50; background: #0a0a0a;
+    border-bottom: 3px solid #ff3300; padding: 12px 20px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .r-top .logo { font-size: 15px; letter-spacing: 3px; font-weight: 700; color: #f0f0f0; text-transform: uppercase; }
+  .r-top .logo span { color: #ff3300; }
+  .r-top .paso { font-size: 10px; letter-spacing: 1.5px; color: #8a8a8a; text-transform: uppercase; }
+
+  .r-wrap { max-width: 860px; margin: 0 auto; padding: 22px 18px 170px; }
+  .r-intro h1 {
+    font-size: clamp(22px, 4.6vw, 34px); line-height: 1.15; letter-spacing: -0.5px;
+    color: #f0f0f0; text-transform: uppercase; margin: 0 0 8px;
+  }
+  .r-intro h1 em { color: #ff3300; font-style: normal; }
+  .r-intro p { font-size: 12px; color: #8a8a8a; margin: 0 0 20px; max-width: 60ch; }
+
+  .r-bloque { border: 2px solid #2a2a2a; background: #111; margin-bottom: 14px; }
+  .r-bloque.oculto { display: none; }
+  .r-bloque-head {
+    display: flex; align-items: baseline; gap: 10px;
+    padding: 11px 14px; border-bottom: 2px solid #2a2a2a; background: #161616;
+  }
+  .r-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px; background: #2a2a2a; color: #8a8a8a;
+    font-size: 10px; font-weight: 700; flex: 0 0 auto;
+  }
+  .r-bloque.activo .r-num { background: #ff3300; color: #0a0a0a; }
+  .r-bloque.listo .r-num { background: #00c853; color: #0a0a0a; }
+  .r-bloque-head h2 { margin: 0; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: #e0e0e0; }
+  .r-bloque-body { padding: 14px; }
+
+  /* días */
+  .r-dias { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
+  .r-dia {
+    background: #141414; border: 2px solid #2a2a2a; color: #b0b0b0; font-family: inherit;
+    padding: 10px; cursor: pointer; text-align: left;
+  }
+  .r-dia:hover { border-color: #4a4a4a; }
+  .r-dia[aria-pressed="true"] { border-color: #ff3300; background: #1a1a1a; }
+  .r-dia[disabled] { opacity: .35; cursor: not-allowed; }
+  .r-dia .dow { display: block; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: #6a6a6a; }
+  .r-dia .num { display: block; font-size: 16px; font-weight: 700; color: #f0f0f0; margin: 2px 0; }
+  .r-dia .libres { display: block; font-size: 9px; color: #8a8a8a; letter-spacing: .5px; }
+  .r-dia[aria-pressed="true"] .dow { color: #ff3300; }
+
+  /* turnos */
+  .r-turnos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 620px) { .r-turnos { grid-template-columns: 1fr; } }
+  .r-turno {
+    border: 2px solid #2a2a2a; background: #141414; padding: 11px 12px; text-align: left;
+    font-family: inherit; color: #b0b0b0; cursor: pointer;
+  }
+  .r-turno:hover { border-color: #4a4a4a; }
+  .r-turno[aria-pressed="true"] { border-color: #ff3300; background: #1a1a1a; }
+  .r-turno[disabled] { opacity: .4; cursor: not-allowed; }
+  .r-turno .t { display: block; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #f0f0f0; }
+  .r-turno .h { display: block; font-size: 10px; color: #6a6a6a; margin-top: 2px; }
+  .r-turno .p { display: block; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-top: 6px; color: #d0d0d0; }
+  .r-turno .p.fijo { color: #ff3300; }
+  .r-turno .p.libre { color: #8a8a8a; }
+  .r-turno .pocos { display: block; font-size: 9px; color: #8a8a8a; margin-top: 4px; }
+
+  /* puntos */
+  .r-puntos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .r-punto-op {
+    background: #141414; border: 2px solid #2a2a2a; color: #d0d0d0; font-family: inherit;
+    padding: 10px; font-size: 11px; cursor: pointer; text-align: left;
+  }
+  .r-punto-op[aria-pressed="true"] { border-color: #ff3300; background: #1a1a1a; }
+  .r-punto-op small { display: block; font-size: 9px; color: #6a6a6a; margin-top: 3px; }
+
+  /* franjas */
+  .r-franjas { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }
+  .r-franja {
+    background: #141414; border: 2px solid #2a2a2a; color: #d0d0d0; font-family: inherit;
+    padding: 11px 8px; cursor: pointer; font-size: 12px; font-weight: 700; letter-spacing: .5px;
+  }
+  .r-franja:hover:not([disabled]) { border-color: #4a4a4a; }
+  .r-franja[aria-pressed="true"] { border-color: #ff3300; background: #ff3300; color: #0a0a0a; }
+  .r-franja[disabled] { opacity: .32; cursor: not-allowed; text-decoration: line-through; }
+  .r-franja small { display: block; font-size: 8px; font-weight: 400; letter-spacing: .5px; margin-top: 3px; color: inherit; }
+
+  .r-nota { font-size: 10px; color: #8a8a8a; margin: 10px 0 0; line-height: 1.6; border-left: 3px solid #4a4a4a; padding-left: 9px; }
+  .r-nota b { color: #d0d0d0; }
+
+  /* pago + política */
+  .r-pagos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .r-pago {
+    background: #141414; border: 2px solid #2a2a2a; color: #d0d0d0; font-family: inherit;
+    padding: 11px; font-size: 11px; cursor: pointer; text-align: left;
+  }
+  .r-pago[aria-pressed="true"] { border-color: #ff3300; background: #1a1a1a; }
+  .r-pago small { display: block; font-size: 9px; color: #6a6a6a; margin-top: 3px; }
+
+  .r-politica {
+    display: flex; gap: 10px; align-items: flex-start; border: 2px solid #4a2a20;
+    background: #1c0d09; padding: 12px; margin-top: 12px;
+  }
+  .r-politica input { margin-top: 3px; width: 18px; height: 18px; accent-color: #ff3300; flex: 0 0 auto; }
+  .r-politica label { font-size: 11px; color: #e0c0b8; line-height: 1.6; }
+  .r-politica b { color: #ffb3a0; }
+
+  /* barra de resumen */
+  .r-barra {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+    background: #0a0a0a; border-top: 3px solid #ff3300; padding: 12px 18px;
+  }
+  .r-barra-int { max-width: 860px; margin: 0 auto; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .r-sel { flex: 1 1 240px; min-width: 0; }
+  .r-sel .k { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: #6a6a6a; display: block; }
+  .r-sel .v { font-size: 12px; color: #f0f0f0; display: block; margin-top: 3px; line-height: 1.4; }
+  .r-sel .v.vacio { color: #5a5a5a; }
+  .r-total { font-size: 16px; font-weight: 700; color: #f0f0f0; white-space: nowrap; }
+  .r-continuar {
+    background: #ff3300; border: 2px solid #0a0a0a; color: #0a0a0a; font-family: inherit;
+    font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 12px 18px; cursor: pointer;
+  }
+  .r-continuar:disabled { background: #2a2a2a; color: #6a6a6a; cursor: not-allowed; }
+
+  /* éxito */
+  .r-exito { border: 3px solid #00c853; background: #0e1a12; padding: 20px; }
+  .r-exito h2 { margin: 0 0 6px; font-size: 16px; letter-spacing: 1px; text-transform: uppercase; color: #00c853; }
+  .r-exito .cod { font-size: 22px; font-weight: 700; color: #f0f0f0; letter-spacing: 2px; margin: 10px 0; }
+  .r-exito .linea { font-size: 12px; color: #b0b0b0; padding: 4px 0; border-bottom: 1px solid #1e2a20; }
+  .r-exito .linea b { color: #f0f0f0; }
+  .r-exito a { display: inline-block; margin-top: 14px; font-size: 11px; color: #ff3300; }
+</style>
+</head>
+<body>
+
+<div class="r-aviso">Demo · la reserva se guarda en tu navegador · no genera pedido real</div>
+
+<div class="r-top">
+  <span class="logo">COMPRATE<span>LO</span>SV</span>
+  <span class="paso" id="paso">Paso 1 de 3</span>
+</div>
+
+<div class="r-wrap">
+
+  <div class="r-intro">
+    <h1>Elige cuándo<br>y <em>dónde</em> lo retiras</h1>
+    <p>Entregas los miércoles y sábados, en Plaza Merliot o Metrocentro. Retiro en punto, sin costo de envío. Cada franja es de 30 minutos.</p>
+  </div>
+
+  <!-- 1 -->
+  <section class="r-bloque activo" id="b-dia">
+    <div class="r-bloque-head"><span class="r-num">1</span><h2>Elige el día</h2></div>
+    <div class="r-bloque-body">
+      <div class="r-dias" id="dias"></div>
+      <p class="r-nota">Necesitas al menos <b>24 horas de anticipación</b>. Si compras el martes a las 10:00 puedes elegir el miércoles a las 10:00, pero no el miércoles a las 9:00.</p>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="r-bloque oculto" id="b-turno">
+    <div class="r-bloque-head"><span class="r-num">2</span><h2>Elige turno y punto</h2></div>
+    <div class="r-bloque-body">
+      <div class="r-turnos" id="turnos"></div>
+      <div id="zona-punto"></div>
+      <p class="r-nota" id="nota-turno"></p>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="r-bloque oculto" id="b-franja">
+    <div class="r-bloque-head"><span class="r-num">3</span><h2>Elige la hora</h2></div>
+    <div class="r-bloque-body">
+      <div class="r-franjas" id="franjas"></div>
+      <p class="r-nota" id="nota-franja">Cada punto atiende una sola persona por franja.</p>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="r-bloque oculto" id="b-pago">
+    <div class="r-bloque-head"><span class="r-num">4</span><h2>Pago y política</h2></div>
+    <div class="r-bloque-body">
+      <div class="r-pagos" id="pagos"></div>
+
+      <div class="r-politica">
+        <input type="checkbox" id="acepto">
+        <label for="acepto">
+          Acepto la <b>política de entregas</b>: si no confirmo mi asistencia ni reprogramo dentro del plazo,
+          se descuenta el <b>20% del total</b> por costos operativos (transporte, embalaje y personal).
+          Si agoto mis reprogramaciones, se me devuelve el 80% restante por depósito.
+        </label>
+      </div>
+
+      <div id="zona-exito"></div>
+    </div>
+  </section>
+
+</div>
+
+<div class="r-barra">
+  <div class="r-barra-int">
+    <div class="r-sel">
+      <span class="k">Tu entrega</span>
+      <span class="v vacio" id="resumen">Sin elegir todavía</span>
+    </div>
+    <span class="r-total" id="total">$0.00</span>
+    <button class="r-continuar" id="btn-confirmar" type="button" disabled>Confirmar pedido</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var CLAVE = 'clv-entregas-demo-v4';
+  var PUNTOS = { merliot: 'Plaza Merliot', metro: 'Metrocentro' };
+  var CARRITO = [
+    { nombre: 'Pieza de ejemplo', precio: 24.00 },
+    { nombre: 'Artículo adicional', precio: 9.50 }
+  ];
+  var TOTAL = CARRITO.reduce(function (a, b) { return a + b.precio; }, 0);
+
+  var estado = { dia: null, turno: null, punto: null, franja: null, pago: null };
+
+  /* ---------- fechas ---------- */
+  function proximasFechas(n) {
+    var out = [], d = new Date();
+    d.setHours(12, 0, 0, 0);
+    while (out.length < n) {
+      d.setDate(d.getDate() + 1);
+      var dow = d.getDay();
+      if (dow === 3 || dow === 6) out.push(new Date(d));
+    }
+    return out;
+  }
+  function iso(d) {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function fmtHora(m) {
+    return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+  }
+  function franjasDesde(hora, cantidad) {
+    var out = [], m = hora * 60;
+    for (var i = 0; i < cantidad; i++) { out.push(fmtHora(m)); m += 30; }
+    return out;
+  }
+
+  /* ---------- agenda compartida con el panel ---------- */
+  function leerDias() {
+    try {
+      var raw = localStorage.getItem(CLAVE);
+      if (raw) {
+        var d = JSON.parse(raw);
+        if (Array.isArray(d) && d.length) return d;
+      }
+    } catch (e) { /* se regenera */ }
+    return estructuraVacia();
+  }
+
+  function estructuraVacia() {
+    return proximasFechas(6).map(function (f) {
+      return {
+        fecha: iso(f),
+        turnos: ['manana', 'tarde'].map(function (t) {
+          return {
+            turno: t,
+            punto: null,
+            franja: franjasDesde(t === 'manana' ? 9 : 14, 6),
+            cupoPorFranja: 1,
+            clientes: [],
+            cancelado: false
+          };
+        })
+      };
+    });
+  }
+
+  var DIAS = leerDias();
+
+  /* ---------- consultas ---------- */
+  function diaDe(fechaIso) {
+    return DIAS.filter(function (d) { return d.fecha === fechaIso; })[0];
+  }
+
+  function ocupadas(tu) {
+    var m = {};
+    tu.clientes.forEach(function (c) {
+      if (c.estado === 'cancelada') return;
+      m[c.franja] = (m[c.franja] || 0) + 1;
+    });
+    return m;
+  }
+
+  function esFuturoValido(fechaIso, franja) {
+    var cuando = new Date(fechaIso + 'T' + franja + ':00');
+    return (cuando.getTime() - Date.now()) >= 24 * 60 * 60 * 1000;
+  }
+
+  function libresTurno(dia, tu) {
+    if (tu.cancelado) return 0;
+    var oc = ocupadas(tu);
+    return tu.franja.filter(function (f) {
+      return esFuturoValido(dia.fecha, f) && (oc[f] || 0) < tu.cupoPorFranja;
+    }).length;
+  }
+
+  function libresDia(dia) {
+    return dia.turnos.reduce(function (a, tu) { return a + libresTurno(dia, tu); }, 0);
+  }
+
+  function turnoContrario(t) {
+    return t === 'manana' ? 'tarde' : 'manana';
+  }
+
+  function otroTurno(dia, tu) {
+    return dia.turnos.filter(function (x) { return x.turno !== tu.turno; })[0];
+  }
+
+  function puntoContrario(p) {
+    return p === 'merliot' ? 'metro' : 'merliot';
+  }
+
+  function puntosPosibles(dia, tu) {
+    if (tu.punto) return [tu.punto];
+    var otro = otroTurno(dia, tu);
+    if (otro && otro.punto) return [puntoContrario(otro.punto)];
+    return ['merliot', 'metro'];
+  }
+
+  /* ---------- render ---------- */
+  var $ = function (s) { return document.querySelector(s); };
+
+  function renderDias() {
+    var cont = $('#dias');
+    cont.textContent = '';
+    DIAS.forEach(function (dia) {
+      var f = new Date(dia.fecha + 'T12:00:00');
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'r-dia';
+      var dow = document.createElement('span'); dow.className = 'dow';
+      dow.textContent = f.toLocaleDateString('es-SV', { weekday: 'long' });
+      var num = document.createElement('span'); num.className = 'num';
+      num.textContent = f.toLocaleDateString('es-SV', { day: 'numeric', month: 'short' });
+      var lib = document.createElement('span'); lib.className = 'libres';
+      var n = libresDia(dia);
+      var algunaFutura = dia.turnos.some(function (tu) {
+        return tu.franja.some(function (f) { return esFuturoValido(dia.fecha, f); });
+      });
+      lib.textContent = n ? n + ' franjas libres'
+        : (algunaFutura ? 'sin cupo' : 'cierra 24 h antes');
+      b.appendChild(dow); b.appendChild(num); b.appendChild(lib);
+      b.setAttribute('aria-pressed', estado.dia === dia.fecha ? 'true' : 'false');
+      if (!n) b.disabled = true;
+      b.addEventListener('click', function () {
+        estado.dia = dia.fecha;
+        estado.turno = null; estado.punto = null; estado.franja = null;
+        renderTodo();
+      });
+      cont.appendChild(b);
+    });
+  }
+
+  function renderTurnos() {
+    var bloque = $('#b-turno');
+    if (!estado.dia) { bloque.classList.add('oculto'); return; }
+    bloque.classList.remove('oculto');
+
+    var dia = diaDe(estado.dia);
+    var cont = $('#turnos');
+    cont.textContent = '';
+
+    dia.turnos.forEach(function (tu) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'r-turno';
+      b.setAttribute('aria-pressed', estado.turno === tu.turno ? 'true' : 'false');
+
+      var t = document.createElement('span'); t.className = 't';
+      t.textContent = tu.turno === 'manana' ? 'Mañana' : 'Tarde';
+      var h = document.createElement('span'); h.className = 'h';
+      h.textContent = tu.turno === 'manana' ? '09:00 – 12:00' : '14:00 – 17:00';
+
+      var p = document.createElement('span');
+      var posibles = puntosPosibles(dia, tu);
+      if (tu.punto) {
+        p.className = 'p fijo';
+        p.textContent = PUNTOS[tu.punto];
+      } else if (posibles.length === 1) {
+        p.className = 'p fijo';
+        p.textContent = PUNTOS[posibles[0]] + ' (por alternancia)';
+      } else {
+        p.className = 'p libre';
+        p.textContent = 'Tú eliges el punto';
+      }
+
+      var pocos = document.createElement('span'); pocos.className = 'pocos';
+      var libres = libresTurno(dia, tu);
+      pocos.textContent = tu.cancelado ? 'Turno no disponible'
+        : (libres ? libres + ' franjas libres' : 'Sin franjas disponibles');
+
+      b.appendChild(t); b.appendChild(h); b.appendChild(p); b.appendChild(pocos);
+      if (tu.cancelado || !libres) b.disabled = true;
+
+      b.addEventListener('click', function () {
+        estado.turno = tu.turno;
+        estado.franja = null;
+        var pos = puntosPosibles(dia, tu);
+        estado.punto = pos.length === 1 ? pos[0] : null;
+        renderTodo();
+      });
+      cont.appendChild(b);
+    });
+
+    // selector de punto si el cliente debe decidirlo
+    var zona = $('#zona-punto');
+    zona.textContent = '';
+    var nota = $('#nota-turno');
+    nota.textContent = '';
+
+    if (estado.turno) {
+      var tu = dia.turnos.filter(function (x) { return x.turno === estado.turno; })[0];
+      var pos = puntosPosibles(dia, tu);
+
+      if (pos.length === 2) {
+        var titulo = document.createElement('p');
+        titulo.className = 'r-nota';
+        titulo.style.marginBottom = '8px';
+        titulo.textContent = 'Este es el primer pedido del turno, así que eliges el punto.';
+        zona.appendChild(titulo);
+
+        var grid = document.createElement('div');
+        grid.className = 'r-puntos';
+        pos.forEach(function (pid) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'r-punto-op';
+          b.setAttribute('aria-pressed', estado.punto === pid ? 'true' : 'false');
+          b.textContent = PUNTOS[pid];
+          var sm = document.createElement('small');
+          sm.textContent = 'La ' + (estado.turno === 'manana' ? 'tarde' : 'mañana') + ' quedará en ' + PUNTOS[puntoContrario(pid)];
+          b.appendChild(sm);
+          b.addEventListener('click', function () {
+            estado.punto = pid;
+            estado.franja = null;
+            renderTodo();
+          });
+          grid.appendChild(b);
+        });
+        zona.appendChild(grid);
+      } else if (tu.punto) {
+        nota.textContent = 'Este turno ya está asignado a ' + PUNTOS[tu.punto] + ' por el primer pedido del día. No se puede cambiar de punto.';
+      } else if (pos.length === 1) {
+        nota.textContent = 'Por alternancia, este turno se entrega en ' + PUNTOS[pos[0]] + ' (el otro turno del día está en ' + PUNTOS[puntoContrario(pos[0])] + ').';
+      }
+    }
+  }
+
+  function renderFranjas() {
+    var bloque = $('#b-franja');
+    if (!estado.turno || !estado.punto) { bloque.classList.add('oculto'); return; }
+    bloque.classList.remove('oculto');
+
+    var dia = diaDe(estado.dia);
+    var tu = dia.turnos.filter(function (x) { return x.turno === estado.turno; })[0];
+    var oc = ocupadas(tu);
+    var cont = $('#franjas');
+    cont.textContent = '';
+
+    tu.franja.forEach(function (f) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'r-franja';
+      b.setAttribute('aria-pressed', estado.franja === f ? 'true' : 'false');
+      b.textContent = f;
+      var sm = document.createElement('small');
+
+      var noFuturo = !esFuturoValido(estado.dia, f);
+      var lleno = (oc[f] || 0) >= tu.cupoPorFranja;
+      if (noFuturo) { sm.textContent = 'muy pronto'; b.disabled = true; }
+      else if (lleno) { sm.textContent = 'ocupado'; b.disabled = true; }
+      else { sm.textContent = 'disponible'; }
+
+      b.appendChild(sm);
+      b.addEventListener('click', function () { estado.franja = f; renderTodo(); });
+      cont.appendChild(b);
+    });
+
+    $('#nota-franja').textContent = 'Una sola persona por franja en ' + PUNTOS[estado.punto] + '. Llega a la hora exacta.';
+  }
+
+  function renderPago() {
+    var bloque = $('#b-pago');
+    if (!estado.franja) { bloque.classList.add('oculto'); return; }
+    bloque.classList.remove('oculto');
+
+    var cont = $('#pagos');
+    cont.textContent = '';
+    [
+      ['tarjeta', 'Tarjeta', 'Wompi · 2 reprogramaciones'],
+      ['efectivo', 'Efectivo al retirar', '1 reprogramación']
+    ].forEach(function (p) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'r-pago';
+      b.setAttribute('aria-pressed', estado.pago === p[0] ? 'true' : 'false');
+      b.textContent = p[1];
+      var sm = document.createElement('small');
+      sm.textContent = p[2];
+      b.appendChild(sm);
+      b.addEventListener('click', function () { estado.pago = p[0]; renderTodo(); });
+      cont.appendChild(b);
+    });
+  }
+
+  function renderBarra() {
+    var partes = [];
+    if (estado.dia) {
+      var f = new Date(estado.dia + 'T12:00:00');
+      partes.push(f.toLocaleDateString('es-SV', { weekday: 'long', day: 'numeric', month: 'long' }));
+    }
+    if (estado.turno) partes.push(estado.turno === 'manana' ? 'mañana' : 'tarde');
+    if (estado.punto) partes.push(PUNTOS[estado.punto]);
+    if (estado.franja) partes.push(estado.franja);
+
+    var r = $('#resumen');
+    if (partes.length) {
+      r.textContent = partes.join(' · ');
+      r.classList.remove('vacio');
+    } else {
+      r.textContent = 'Sin elegir todavía';
+      r.classList.add('vacio');
+    }
+
+    $('#total').textContent = '$' + TOTAL.toFixed(2);
+
+    var ok = estado.dia && estado.turno && estado.punto && estado.franja && estado.pago && $('#acepto').checked;
+    $('#btn-confirmar').disabled = !ok;
+
+    var paso = 1;
+    if (estado.dia) paso = 2;
+    if (estado.franja) paso = 3;
+    if (estado.pago) paso = 4;
+    $('#paso').textContent = 'Paso ' + Math.min(paso, 3) + ' de 3';
+
+    [['#b-dia', !!estado.dia], ['#b-turno', !!estado.turno], ['#b-franja', !!estado.franja], ['#b-pago', !!estado.pago]]
+      .forEach(function (p) {
+        var el = $(p[0]);
+        el.classList.toggle('listo', p[1]);
+        el.classList.toggle('activo', !p[1]);
+      });
+  }
+
+  function renderTodo() {
+    renderDias();
+    renderTurnos();
+    renderFranjas();
+    renderPago();
+    renderBarra();
+  }
+
+  /* ---------- confirmar ---------- */
+  function confirmar() {
+    var dia = diaDe(estado.dia);
+    var tu = dia.turnos.filter(function (x) { return x.turno === estado.turno; })[0];
+    var otro = otroTurno(dia, tu);
+
+    // fijar punto del turno y derivar el contrario
+    if (!tu.punto) tu.punto = estado.punto;
+    if (otro && !otro.punto) otro.punto = puntoContrario(tu.punto);
+
+    var num = 1000 + Math.floor(Math.random() * 9000);
+    var pedido = 'CLV-2026-' + num;
+
+    tu.clientes.push({
+      id: 'r-' + Date.now(),
+      cliente: 'Cliente demo',
+      pedido: pedido,
+      telefono: '70000000',
+      franja: estado.franja,
+      metodo: estado.pago,
+      total: Math.round(TOTAL * 100) / 100,
+      intentos: 0,
+      estado: 'programada',
+      notas: '',
+      eventos: [
+        { ts: 'Reserva creada', detalle: 'Cliente eligió ' + estado.franja + ' en ' + PUNTOS[estado.punto] },
+        { ts: 'Política aceptada', detalle: 'Consentimiento del 20% registrado en el checkout' }
+      ]
+    });
+
+    try { localStorage.setItem(CLAVE, JSON.stringify(DIAS)); } catch (e) { /* sin almacenamiento */ }
+
+    var f = new Date(dia.fecha + 'T12:00:00');
+    $('#zona-exito').textContent = '';
+    var box = document.createElement('div');
+    box.className = 'r-exito';
+
+    var h = document.createElement('h2');
+    h.textContent = 'Pedido reservado';
+    var cod = document.createElement('div');
+    cod.className = 'cod';
+    cod.textContent = pedido;
+
+    box.appendChild(h); box.appendChild(cod);
+
+    [
+      ['Día', f.toLocaleDateString('es-SV', { weekday: 'long', day: 'numeric', month: 'long' })],
+      ['Punto', PUNTOS[estado.punto]],
+      ['Turno', (estado.turno === 'manana' ? 'Mañana' : 'Tarde') + ' (' + estado.franja + ')'],
+      ['Pago', estado.pago === 'tarjeta' ? 'Tarjeta · 2 reprogramaciones' : 'Efectivo · 1 reprogramación'],
+      ['Total', '$' + TOTAL.toFixed(2)],
+      ['Si no confirmo ni reprogramo', 'se devuelven $' + (Math.round(TOTAL * 0.8 * 100) / 100).toFixed(2) + ' (80%)']
+    ].forEach(function (l) {
+      var d = document.createElement('div');
+      d.className = 'linea';
+      d.textContent = l[0] + ': ';
+      var b = document.createElement('b');
+      b.textContent = l[1];
+      d.appendChild(b);
+      box.appendChild(d);
+    });
+
+    var aviso = document.createElement('p');
+    aviso.className = 'r-nota';
+    aviso.textContent = 'El día de la entrega, a las 7:00, recibirás el aviso en tu bandeja para confirmar. Si no confirmas antes de las 7:35, se te reofertan los días disponibles.';
+    box.appendChild(aviso);
+
+    var a = document.createElement('a');
+    a.href = 'admin-entregas.html';
+    a.textContent = 'Ver mi entrega en el panel →';
+    box.appendChild(a);
+
+    $('#zona-exito').appendChild(box);
+    $('#btn-confirmar').disabled = true;
+    $('#btn-confirmar').textContent = 'Reservado';
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  /* ---------- wiring ---------- */
+  $('#acepto').addEventListener('change', renderBarra);
+  $('#btn-confirmar').addEventListener('click', confirmar);
+
+  renderTodo();
+})();
+</script>
+</body>
+</html>
