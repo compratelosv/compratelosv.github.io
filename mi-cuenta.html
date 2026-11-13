@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es-SV">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi cuenta — Compratelosv</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/estilos.css">
+<style>
+  .c-aviso {
+    background: #ff3300; color: #0a0a0a; font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; text-align: center; padding: 7px 14px;
+  }
+  .c-top {
+    background: #0a0a0a; border-bottom: 3px solid #ff3300; padding: 13px 20px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .c-top .logo { font-size: 15px; letter-spacing: 3px; font-weight: 700; color: #f0f0f0; text-transform: uppercase; text-decoration: none; }
+  .c-top .logo span { color: #ff3300; }
+  .c-top .quien { font-size: 10px; letter-spacing: 1px; color: #8a8a8a; text-transform: uppercase; }
+
+  .c-wrap { max-width: 1060px; margin: 0 auto; padding: 22px 18px 60px; }
+  .c-hola { margin: 0 0 18px; }
+  .c-hola h1 { margin: 0 0 4px; font-size: clamp(20px, 4vw, 28px); color: #f0f0f0; letter-spacing: -0.3px; }
+  .c-hola p { margin: 0; font-size: 12px; color: #8a8a8a; }
+
+  .c-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 16px; align-items: start; }
+  @media (max-width: 860px) { .c-grid { grid-template-columns: 1fr; } }
+
+  .c-card { border: 2px solid #2a2a2a; background: #111; margin-bottom: 16px; }
+  .c-card-head {
+    padding: 11px 14px; border-bottom: 2px solid #2a2a2a; background: #161616;
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  }
+  .c-card-head h2 { margin: 0; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #e0e0e0; }
+  .c-badge {
+    background: #ff3300; color: #0a0a0a; font-size: 9px; font-weight: 700;
+    letter-spacing: 1px; padding: 2px 6px; text-transform: uppercase;
+  }
+  .c-body { padding: 14px; }
+
+  /* próxima entrega */
+  .c-entrega-fecha { font-size: 19px; font-weight: 700; color: #f0f0f0; letter-spacing: -0.3px; }
+  .c-entrega-hora { font-size: 13px; color: #ff3300; font-weight: 700; margin-top: 2px; letter-spacing: 1px; }
+  .c-filas { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .c-fila { border: 1px solid #2a2a2a; padding: 8px 10px; }
+  .c-fila .k { font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: #6a6a6a; display: block; }
+  .c-fila .v { font-size: 12px; color: #e0e0e0; display: block; margin-top: 2px; }
+  .c-estado {
+    display: inline-block; margin-top: 12px; font-size: 9px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase; padding: 4px 8px; border: 2px solid;
+  }
+  .c-estado--programada { color: #ffb300; border-color: #ffb300; }
+  .c-estado--confirmada { color: #00c853; border-color: #00c853; }
+  .c-estado--no_confirmada { color: #ff3300; border-color: #ff3300; }
+  .c-estado--reagendada { color: #4a9eff; border-color: #4a9eff; }
+
+  .c-acciones { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .c-btn {
+    background: transparent; border: 2px solid #4a4a4a; color: #d0d0d0; font-family: inherit;
+    font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    padding: 10px 13px; cursor: pointer;
+  }
+  .c-btn:hover { border-color: #ff3300; color: #fff; }
+  .c-btn--ok { background: #00c853; border-color: #00c853; color: #0a0a0a; }
+  .c-btn--ok:hover { background: #00e05f; color: #0a0a0a; }
+  .c-btn--no { border-color: #ff3300; color: #ff3300; }
+  .c-btn--no:hover { background: #ff3300; color: #0a0a0a; }
+  .c-btn[disabled] { opacity: .4; cursor: not-allowed; }
+
+  /* mensajes */
+  .c-msg { border-bottom: 1px solid #1e1e1e; padding: 13px 14px; }
+  .c-msg:last-child { border-bottom: 0; }
+  .c-msg.nuevo { background: #141414; border-left: 3px solid #ff3300; }
+  .c-msg-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 5px; }
+  .c-msg-t { font-size: 11px; font-weight: 700; color: #f0f0f0; letter-spacing: .5px; }
+  .c-msg-h { font-size: 9px; color: #6a6a6a; letter-spacing: .5px; white-space: nowrap; }
+  .c-msg p { margin: 0; font-size: 11px; color: #b0b0b0; line-height: 1.6; }
+  .c-msg .c-acciones { margin-top: 10px; }
+  .c-vacio { padding: 26px 14px; text-align: center; color: #5a5a5a; font-size: 11px; }
+  .c-vacio a { color: #ff3300; }
+
+  /* slots */
+  .c-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-top: 10px; }
+  .c-slot {
+    background: #141414; border: 2px solid #2a2a2a; color: #d0d0d0; font-family: inherit;
+    padding: 9px 10px; font-size: 11px; text-align: left; cursor: pointer;
+  }
+  .c-slot:hover { border-color: #ff3300; }
+  .c-slot b { display: block; font-size: 12px; color: #f0f0f0; }
+  .c-slot small { display: block; font-size: 9px; color: #8a8a8a; margin-top: 2px; }
+
+  /* pedidos */
+  .c-pedido {
+    display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 11px 14px;
+    border-bottom: 1px solid #1e1e1e; align-items: center;
+  }
+  .c-pedido:last-child { border-bottom: 0; }
+  .c-pedido .cod { font-size: 11px; color: #f0f0f0; font-weight: 700; letter-spacing: .5px; display: block; }
+  .c-pedido .det { font-size: 9px; color: #6a6a6a; display: block; margin-top: 2px; }
+  .c-pedido .tot { font-size: 12px; color: #ff3300; font-weight: 700; }
+
+  /* cuenta */
+  .c-datos { display: grid; gap: 8px; }
+  .c-dato { border: 1px solid #2a2a2a; padding: 9px 10px; }
+  .c-dato .k { font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: #6a6a6a; display: block; }
+  .c-dato .v { font-size: 12px; color: #e0e0e0; display: block; margin-top: 2px; }
+  .c-politica { font-size: 10px; color: #8a8a8a; line-height: 1.7; border-left: 3px solid #ff3300; padding-left: 10px; margin-top: 12px; }
+  .c-banner {
+    border: 2px solid #00c853; background: #0e1a12; color: #a8e6bf; padding: 11px 13px;
+    font-size: 11px; margin-bottom: 14px; display: none;
+  }
+  .c-banner.ver { display: block; }
+  .c-banner.error { border-color: #ff3300; background: #1c0d09; color: #ffb3a0; }
+</style>
+</head>
+<body>
+
+<div class="c-aviso">Demo · datos en tu navegador · comparte agenda con el panel y la reserva</div>
+
+<div class="c-top">
+  <a class="logo" href="index.html">COMPRATE<span>LO</span>SV</a>
+  <span class="quien" id="quien">Mi cuenta</span>
+</div>
+
+<div class="c-wrap">
+  <div class="c-banner" id="banner" role="status" aria-live="polite"></div>
+
+  <div class="c-hola">
+    <h1 id="saludo">Hola</h1>
+    <p id="subsaludo">Aquí ves tu entrega, tus avisos y tus pedidos.</p>
+  </div>
+
+  <div id="zona-slots"></div>
+
+  <div class="c-grid">
+    <div>
+      <section class="c-card" id="card-entrega">
+        <div class="c-card-head">
+          <h2>Tu próxima entrega</h2>
+          <span id="entrega-badge"></span>
+        </div>
+        <div class="c-body" id="entrega-body"></div>
+      </section>
+
+      <section class="c-card">
+        <div class="c-card-head">
+          <h2>Mensajes</h2>
+          <span class="c-badge" id="no-leidos" style="display:none">0</span>
+        </div>
+        <div id="mensajes"></div>
+      </section>
+    </div>
+
+    <div>
+      <section class="c-card">
+        <div class="c-card-head"><h2>Mis pedidos</h2></div>
+        <div id="pedidos"></div>
+      </section>
+
+      <section class="c-card">
+        <div class="c-card-head"><h2>Mis datos</h2></div>
+        <div class="c-body">
+          <div class="c-datos">
+            <div class="c-dato"><span class="k">Nombre</span><span class="v" id="d-nombre">—</span></div>
+            <div class="c-dato"><span class="k">Correo</span><span class="v" id="d-correo">—</span></div>
+            <div class="c-dato"><span class="k">Teléfono</span><span class="v" id="d-tel">—</span></div>
+            <div class="c-dato"><span class="k">Método de pago</span><span class="v" id="d-pago">—</span></div>
+          </div>
+          <p class="c-politica">
+            Aceptaste la política de entregas: si no confirmas tu asistencia ni reprogramas dentro del plazo,
+            se descuenta el <b>20%</b> por costos operativos y se te devuelve el 80% por depósito.
+          </p>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var CLAVE = 'clv-entregas-demo-v4';
+  var PUNTOS = { merliot: 'Plaza Merliot', metro: 'Metrocentro' };
+  var YO = 'Cliente demo';
+  var ESTADOS = {
+    programada: 'Pendiente de confirmar',
+    confirmada: 'Confirmada',
+    no_confirmada: 'No confirmada',
+    reagendada: 'Reagendada',
+    entregada: 'Entregada',
+    cancelada: 'Cancelada'
+  };
+
+  var DIAS = leer();
+
+  function leer() {
+    try {
+      var raw = localStorage.getItem(CLAVE);
+      if (raw) {
+        var d = JSON.parse(raw);
+        if (Array.isArray(d)) return d;
+      }
+    } catch (e) { /* vacío */ }
+    return [];
+  }
+  function guardar() {
+    try { localStorage.setItem(CLAVE, JSON.stringify(DIAS)); } catch (e) { /* sin storage */ }
+  }
+
+  function fechaLarga(iso) {
+    return new Date(iso + 'T12:00:00').toLocaleDateString('es-SV',
+      { weekday: 'long', day: 'numeric', month: 'long' });
+  }
+  function esFuturo(fechaIso, franja) {
+    return (new Date(fechaIso + 'T' + franja + ':00').getTime() - Date.now()) >= 24 * 60 * 60 * 1000;
+  }
+  function puntoContrario(p) { return p === 'merliot' ? 'metro' : 'merliot'; }
+
+  /* ---------- mis entregas ---------- */
+  function misEntregas() {
+    var out = [];
+    DIAS.forEach(function (dia) {
+      dia.turnos.forEach(function (tu) {
+        tu.clientes.forEach(function (c) {
+          if (c.cliente === YO) out.push({ dia: dia, tu: tu, c: c });
+        });
+      });
+    });
+    out.sort(function (a, b) {
+      if (a.dia.fecha !== b.dia.fecha) return a.dia.fecha < b.dia.fecha ? -1 : 1;
+      return a.c.franja < b.c.franja ? -1 : 1;
+    });
+    return out;
+  }
+
+  var MIS = misEntregas();
+  var ACTUAL = MIS.filter(function (m) {
+    return m.c.estado !== 'entregada' && m.c.estado !== 'cancelada';
+  })[0] || null;
+
+  /* ---------- slots para reagendar ---------- */
+  function slotsLibres() {
+    var out = [];
+    DIAS.forEach(function (dia) {
+      dia.turnos.forEach(function (tu) {
+        if (tu.cancelado) return;
+        var ocupadas = {};
+        tu.clientes.forEach(function (c) {
+          if (c.estado !== 'cancelada' && c.cliente !== YO) ocupadas[c.franja] = true;
+        });
+        tu.franja.forEach(function (f) {
+          if (!esFuturo(dia.fecha, f)) return;
+          if (ocupadas[f]) return;
+          if (ACTUAL && dia.fecha === ACTUAL.dia.fecha && tu.turno === ACTUAL.tu.turno) return;
+          out.push({ dia: dia, tu: tu, franja: f });
+        });
+      });
+    });
+    return out.slice(0, 6);
+  }
+
+  /* ---------- acciones ---------- */
+  function banner(msg, error) {
+    var b = document.getElementById('banner');
+    b.textContent = msg;
+    b.className = 'c-banner ver' + (error ? ' error' : '');
+    clearTimeout(banner._t);
+    banner._t = setTimeout(function () { b.className = 'c-banner'; }, 7000);
+  }
+
+  function confirmar() {
+    if (!ACTUAL) return;
+    ACTUAL.c.estado = 'confirmada';
+    ACTUAL.c.eventos.push({ ts: 'Confirmado por el cliente', detalle: 'Asistirá el ' + ACTUAL.dia.fecha + ' a las ' + ACTUAL.c.franja });
+    guardar();
+    banner('Listo, confirmaste que irás. Te esperamos el ' + fechaLarga(ACTUAL.dia.fecha) + ' a las ' + ACTUAL.c.franja + '.');
+    render();
+  }
+
+  function noPodre() {
+    if (!ACTUAL) return;
+    var libres = slotsLibres();
+    if (!libres.length) {
+      banner('No hay horarios libres para reprogramar. Escríbenos para resolverlo.', true);
+      return;
+    }
+    ACTUAL.c.estado = 'reagendada';
+    ACTUAL.c.eventos.push({ ts: 'Cliente avisó que no podrá ir', detalle: 'Se ofrecen horarios disponibles' });
+    guardar();
+    render();
+    document.getElementById('zona-slots').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function reagendar(slot) {
+    if (!ACTUAL) return;
+
+    // quitar del turno original
+    var orig = ACTUAL.tu.clientes.indexOf(ACTUAL.c);
+    if (orig >= 0) ACTUAL.tu.clientes.splice(orig, 1);
+
+    // punto según reglas: si el turno destino ya tiene punto, debe ser ese
+    var punto = slot.tu.punto || ACTUAL.tu.punto || 'merliot';
+    if (!slot.tu.punto) {
+      slot.tu.punto = punto;
+      var otro = slot.dia.turnos.filter(function (x) { return x.turno !== slot.tu.turno; })[0];
+      if (otro && !otro.punto) otro.punto = puntoContrario(punto);
+    }
+
+    ACTUAL.c.franja = slot.franja;
+    ACTUAL.c.estado = 'programada';
+    ACTUAL.c.intentos = (ACTUAL.c.intentos || 0) + 1;
+    ACTUAL.c.eventos.push({
+      ts: 'Reprogramado',
+      detalle: fechaLarga(slot.dia.fecha) + ' · ' + slot.franja + ' · ' + PUNTOS[punto] + ' (intento ' + ACTUAL.c.intentos + ')'
+    });
+    slot.tu.clientes.push(ACTUAL.c);
+    guardar();
+
+    var max = ACTUAL.c.metodo === 'tarjeta' ? 2 : 1;
+    var resto = max - ACTUAL.c.intentos;
+    var msg = 'Entrega movida al ' + fechaLarga(slot.dia.fecha) + ' a las ' + slot.franja + ' en ' + PUNTOS[punto] +
+      '. ' + (resto > 0 ? 'Te queda' + (resto > 1 ? 'n ' + resto + ' intentos' : ' 1 intento') + '.' : 'Este era tu último intento.');
+    try { sessionStorage.setItem('clv-flash', msg); } catch (e) { /* sin storage */ }
+    location.reload();
+  }
+
+  /* ---------- render ---------- */
+  function pill(estado) {
+    var s = document.createElement('span');
+    s.className = 'c-estado c-estado--' + estado;
+    s.textContent = ESTADOS[estado] || estado;
+    return s;
+  }
+
+  function renderEntrega() {
+    var body = document.getElementById('entrega-body');
+    body.textContent = '';
+    var badge = document.getElementById('entrega-badge');
+
+    if (!ACTUAL) {
+      badge.textContent = '';
+      var v = document.createElement('div');
+      v.className = 'c-vacio';
+      v.textContent = 'No tienes entregas pendientes. ';
+      var a = document.createElement('a');
+      a.href = 'reserva.html';
+      a.textContent = 'Reserva una entrega →';
+      v.appendChild(a);
+      body.appendChild(v);
+      return;
+    }
+
+    badge.textContent = '';
+    badge.appendChild(pill(ACTUAL.c.estado));
+
+    var f = document.createElement('div');
+    f.className = 'c-entrega-fecha';
+    f.textContent = fechaLarga(ACTUAL.dia.fecha);
+    body.appendChild(f);
+
+    var h = document.createElement('div');
+    h.className = 'c-entrega-hora';
+    h.textContent = ACTUAL.c.franja + ' · ' + (ACTUAL.tu.turno === 'manana' ? 'mañana' : 'tarde');
+    body.appendChild(h);
+
+    var filas = document.createElement('div');
+    filas.className = 'c-filas';
+    [
+      ['Punto', PUNTOS[ACTUAL.tu.punto]],
+      ['Pedido', ACTUAL.c.pedido],
+      ['Total', '$' + Number(ACTUAL.c.total).toFixed(2)],
+      ['Intentos usados', ACTUAL.c.intentos + ' de ' + (ACTUAL.c.metodo === 'tarjeta' ? 2 : 1)]
+    ].forEach(function (p) {
+      var d = document.createElement('div');
+      d.className = 'c-fila';
+      var k = document.createElement('span'); k.className = 'k'; k.textContent = p[0];
+      var v = document.createElement('span'); v.className = 'v'; v.textContent = p[1];
+      d.appendChild(k); d.appendChild(v);
+      filas.appendChild(d);
+    });
+    body.appendChild(filas);
+
+    var acc = document.createElement('div');
+    acc.className = 'c-acciones';
+
+    var bOk = document.createElement('button');
+    bOk.type = 'button';
+    bOk.className = 'c-btn c-btn--ok';
+    bOk.textContent = ACTUAL.c.estado === 'confirmada' ? 'Ya confirmaste' : 'Sí, ahí estaré';
+    bOk.disabled = ACTUAL.c.estado === 'confirmada';
+    bOk.addEventListener('click', confirmar);
+
+    var bNo = document.createElement('button');
+    bNo.type = 'button';
+    bNo.className = 'c-btn c-btn--no';
+    bNo.textContent = 'No podré ir';
+    bNo.addEventListener('click', noPodre);
+
+    acc.appendChild(bOk); acc.appendChild(bNo);
+    body.appendChild(acc);
+  }
+
+  function renderMensajes() {
+    var cont = document.getElementById('mensajes');
+    cont.textContent = '';
+
+    if (!ACTUAL) {
+      var v = document.createElement('div');
+      v.className = 'c-vacio';
+      v.textContent = 'Sin mensajes por ahora.';
+      cont.appendChild(v);
+      return;
+    }
+
+    var msgs = [];
+
+    if (ACTUAL.c.estado === 'confirmada') {
+      msgs.push({
+        t: 'Confirmación recibida',
+        h: 'Hoy · 07:12',
+        p: 'Gracias por confirmar. Te esperamos el ' + fechaLarga(ACTUAL.dia.fecha) + ' a las ' +
+           ACTUAL.c.franja + ' en ' + PUNTOS[ACTUAL.tu.punto] + '. Lleva tu número de pedido.',
+        nuevo: true
+      });
+    } else if (ACTUAL.c.estado === 'reagendada') {
+      msgs.push({
+        t: 'Elige tu nuevo horario',
+        h: 'Hoy · 07:35',
+        p: 'Lamentamos que no hayas confirmado. Puedes elegir un nuevo horario entre los disponibles. Tienes 24 horas para decidir o pierdes este intento.',
+        nuevo: true
+      });
+    } else {
+      msgs.push({
+        t: 'Confirma tu entrega de hoy',
+        h: 'Hoy · 07:00',
+        p: 'Hola. Hoy es tu entrega: ' + fechaLarga(ACTUAL.dia.fecha) + ' a las ' + ACTUAL.c.franja +
+           ' en ' + PUNTOS[ACTUAL.tu.punto] + '. ¿Vas a llegar? Confirma antes de las 07:35; si no confirmas, tu entrega se pospone.',
+        nuevo: true,
+        acciones: true
+      });
+    }
+
+    msgs.forEach(function (m) {
+      var d = document.createElement('div');
+      d.className = 'c-msg' + (m.nuevo ? ' nuevo' : '');
+
+      var top = document.createElement('div');
+      top.className = 'c-msg-top';
+      var t = document.createElement('span'); t.className = 'c-msg-t'; t.textContent = m.t;
+      var h = document.createElement('span'); h.className = 'c-msg-h'; h.textContent = m.h;
+      top.appendChild(t); top.appendChild(h);
+
+      var p = document.createElement('p');
+      p.textContent = m.p;
+
+      d.appendChild(top); d.appendChild(p);
+
+      if (m.acciones) {
+        var acc = document.createElement('div');
+        acc.className = 'c-acciones';
+        var b1 = document.createElement('button');
+        b1.type = 'button'; b1.className = 'c-btn c-btn--ok'; b1.textContent = 'Sí, ahí estaré';
+        b1.addEventListener('click', confirmar);
+        var b2 = document.createElement('button');
+        b2.type = 'button'; b2.className = 'c-btn c-btn--no'; b2.textContent = 'No podré ir';
+        b2.addEventListener('click', noPodre);
+        acc.appendChild(b1); acc.appendChild(b2);
+        d.appendChild(acc);
+      }
+
+      cont.appendChild(d);
+    });
+
+    var badge = document.getElementById('no-leidos');
+    badge.style.display = 'inline-block';
+    badge.textContent = msgs.length;
+  }
+
+  function renderSlots() {
+    var zona = document.getElementById('zona-slots');
+    zona.textContent = '';
+    if (!ACTUAL || ACTUAL.c.estado !== 'reagendada') return;
+
+    var libres = slotsLibres();
+    var card = document.createElement('section');
+    card.className = 'c-card';
+    var head = document.createElement('div');
+    head.className = 'c-card-head';
+    var h2 = document.createElement('h2');
+    h2.textContent = 'Elige tu nuevo horario';
+    var b = document.createElement('span');
+    b.className = 'c-badge';
+    b.textContent = '24 h para decidir';
+    head.appendChild(h2); head.appendChild(b);
+
+    var body = document.createElement('div');
+    body.className = 'c-body';
+    var p = document.createElement('p');
+    p.style.cssText = 'margin:0;font-size:11px;color:#8a8a8a';
+    p.textContent = 'Estos son los horarios que quedan libres según la agenda real. Si no eliges en 24 horas, pierdes este intento.';
+    body.appendChild(p);
+
+    if (!libres.length) {
+      var v = document.createElement('div');
+      v.className = 'c-vacio';
+      v.textContent = 'No quedan franjas libres en los próximos días.';
+      body.appendChild(v);
+    } else {
+      var grid = document.createElement('div');
+      grid.className = 'c-slots';
+      libres.forEach(function (s) {
+        var bt = document.createElement('button');
+        bt.type = 'button';
+        bt.className = 'c-slot';
+        var bb = document.createElement('b');
+        bb.textContent = fechaLarga(s.dia.fecha);
+        var sm = document.createElement('small');
+        sm.textContent = s.franja + ' · ' + (s.tu.turno === 'manana' ? 'mañana' : 'tarde') + ' · ' +
+          PUNTOS[s.tu.punto || ACTUAL.tu.punto || 'merliot'];
+        bt.appendChild(bb); bt.appendChild(sm);
+        bt.addEventListener('click', function () { reagendar(s); });
+        grid.appendChild(bt);
+      });
+      body.appendChild(grid);
+    }
+
+    card.appendChild(head); card.appendChild(body);
+    zona.appendChild(card);
+  }
+
+  function renderPedidos() {
+    var cont = document.getElementById('pedidos');
+    cont.textContent = '';
+    if (!MIS.length) {
+      var v = document.createElement('div');
+      v.className = 'c-vacio';
+      v.textContent = 'Aún no tienes pedidos.';
+      cont.appendChild(v);
+      return;
+    }
+    MIS.forEach(function (m) {
+      var d = document.createElement('div');
+      d.className = 'c-pedido';
+      var izq = document.createElement('div');
+      var cod = document.createElement('span'); cod.className = 'cod'; cod.textContent = m.c.pedido;
+      var det = document.createElement('span'); det.className = 'det';
+      det.textContent = fechaLarga(m.dia.fecha) + ' · ' + m.c.franja + ' · ' + PUNTOS[m.tu.punto] + ' · ' + (ESTADOS[m.c.estado] || m.c.estado);
+      izq.appendChild(cod); izq.appendChild(det);
+      var tot = document.createElement('span'); tot.className = 'tot';
+      tot.textContent = '$' + Number(m.c.total).toFixed(2);
+      d.appendChild(izq); d.appendChild(tot);
+      cont.appendChild(d);
+    });
+  }
+
+  function renderDatos() {
+    document.getElementById('saludo').textContent = 'Hola, ' + YO;
+    document.getElementById('quien').textContent = YO;
+    document.getElementById('d-nombre').textContent = YO;
+    document.getElementById('d-correo').textContent = 'demo@compratelosv.test';
+    document.getElementById('d-tel').textContent = ACTUAL ? ACTUAL.c.telefono : '—';
+    document.getElementById('d-pago').textContent = ACTUAL
+      ? (ACTUAL.c.metodo === 'tarjeta' ? 'Tarjeta (2 intentos)' : 'Efectivo (1 intento)')
+      : '—';
+    document.getElementById('subsaludo').textContent = ACTUAL
+      ? 'Tu entrega es el ' + fechaLarga(ACTUAL.dia.fecha) + '.'
+      : 'Aquí ves tu entrega, tus avisos y tus pedidos.';
+  }
+
+  function render() {
+    MIS = misEntregas();
+    ACTUAL = MIS.filter(function (m) {
+      return m.c.estado !== 'entregada' && m.c.estado !== 'cancelada';
+    })[0] || null;
+    renderDatos();
+    renderEntrega();
+    renderMensajes();
+    renderSlots();
+    renderPedidos();
+  }
+
+  render();
+
+  try {
+    var flash = sessionStorage.getItem('clv-flash');
+    if (flash) {
+      sessionStorage.removeItem('clv-flash');
+      banner(flash);
+    }
+  } catch (e) { /* sin storage */ }
+})();
+</script>
+</body>
+</html>
