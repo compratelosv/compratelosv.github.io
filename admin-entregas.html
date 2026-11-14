@@ -169,9 +169,59 @@
   }
   .p-motivo-nota { min-height: 62px; resize: vertical; }
   .p-etiqueta { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: #6a6a6a; display: block; margin-top: 12px; }
+
+  /* acceso */
+  .l-overlay {
+    position: fixed; inset: 0; z-index: 900; background: #0a0a0a;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .l-overlay.oculto { display: none; }
+  .l-box { width: 100%; max-width: 380px; border: 3px solid #ff3300; background: #111; padding: 26px; }
+  .l-box h2 { margin: 0 0 4px; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: #f0f0f0; }
+  .l-box p.sub { margin: 0 0 18px; font-size: 10px; color: #8a8a8a; letter-spacing: 1px; text-transform: uppercase; }
+  .l-campo { margin-bottom: 12px; }
+  .l-campo label { display: block; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: #6a6a6a; margin-bottom: 5px; }
+  .l-campo input {
+    width: 100%; background: #1a1a1a; border: 2px solid #4a4a4a; color: #f0f0f0;
+    font-family: inherit; font-size: 13px; padding: 10px 11px;
+  }
+  .l-campo input:focus { outline: none; border-color: #ff3300; }
+  .l-entrar {
+    width: 100%; background: #ff3300; border: 2px solid #0a0a0a; color: #0a0a0a;
+    font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; padding: 12px; cursor: pointer; margin-top: 4px;
+  }
+  .l-entrar:hover { background: #ff5522; }
+  .l-error { color: #ff3300; font-size: 10px; min-height: 16px; margin: 8px 0 0; letter-spacing: .5px; }
+  .l-nota { margin: 16px 0 0; font-size: 9px; color: #5a5a5a; line-height: 1.7; border-top: 1px solid #2a2a2a; padding-top: 12px; }
+  .l-nota b { color: #ff3300; }
 </style>
 </head>
 <body>
+
+<div class="l-overlay" id="login">
+  <form class="l-box" id="login-form" autocomplete="off">
+    <h2>Panel de entregas</h2>
+    <p class="sub">Acceso de administración</p>
+
+    <div class="l-campo">
+      <label for="l-user">Correo</label>
+      <input id="l-user" type="email" required autocomplete="username" placeholder="admin@compratelosv.test">
+    </div>
+    <div class="l-campo">
+      <label for="l-pass">Clave</label>
+      <input id="l-pass" type="password" required autocomplete="current-password" placeholder="••••••••">
+    </div>
+
+    <button class="l-entrar" type="submit">Entrar</button>
+    <p class="l-error" id="l-error" role="alert"></p>
+
+    <p class="l-nota">
+      <b>Esto no es seguridad real.</b> La página es estática: cualquiera con el código puede saltarse
+      esta pantalla. Sirve para probar el flujo; en producción va con Supabase Auth y RLS.
+    </p>
+  </form>
+</div>
 
 <div class="p-aviso">Panel de entregas · datos de ejemplo · no conectado a Supabase</div>
 
@@ -184,6 +234,7 @@
     <button class="p-btn" id="btn-compacto" type="button" aria-pressed="false">Vista compacta</button>
     <button class="p-btn" id="btn-corte" type="button">Simular 07:35 (corte)</button>
     <button class="p-btn" id="btn-reset" type="button">Reiniciar datos</button>
+    <button class="p-btn" id="btn-salir" type="button">Salir</button>
   </div>
 </div>
 
@@ -774,7 +825,61 @@
     if ($('#modal-motivo').classList.contains('ver')) cerrarMotivo();
   });
 
-  render();
+  /* ---------- acceso (demo) ----------
+     ADVERTENCIA: la clave está como hash en un archivo público.
+     Esto NO es autenticación real: solo oculta la vista y permite
+     probar el flujo. En producción: Supabase Auth + RLS. */
+  var USUARIO = 'admin@compratelosv.test';
+  var HASH_CLAVE = '0c328a4a764f25024c9876d2b8dd9c5cb3b5f39cf18c4cd83920e0b5f1fdc76e';
+
+  function sha256(txt) {
+    var bytes = new TextEncoder().encode(txt);
+    return crypto.subtle.digest('SHA-256', bytes).then(function (buf) {
+      return Array.from(new Uint8Array(buf)).map(function (b) {
+        return b.toString(16).padStart(2, '0');
+      }).join('');
+    });
+  }
+
+  function ocultarLogin() { $('#login').classList.add('oculto'); }
+  function mostrarLogin() {
+    $('#login').classList.remove('oculto');
+    setTimeout(function () { $('#l-user').focus(); }, 50);
+  }
+
+  $('#login-form').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var u = $('#l-user').value.trim().toLowerCase();
+    var p = $('#l-pass').value;
+    $('#l-error').textContent = '';
+
+    sha256(p).then(function (h) {
+      if (u === USUARIO && h === HASH_CLAVE) {
+        try { sessionStorage.setItem('clv-admin', 'ok'); } catch (e) { /* sin storage */ }
+        $('#l-pass').value = '';
+        ocultarLogin();
+        render();
+      } else {
+        $('#l-error').textContent = 'Correo o clave incorrectos.';
+        $('#l-pass').value = '';
+        $('#l-pass').focus();
+      }
+    }).catch(function () {
+      $('#l-error').textContent = 'No se pudo verificar la clave en este navegador.';
+    });
+  });
+
+  $('#btn-salir').addEventListener('click', function () {
+    try { sessionStorage.removeItem('clv-admin'); } catch (e) { /* sin storage */ }
+    mostrarLogin();
+  });
+
+  if (sessionStorage.getItem('clv-admin') === 'ok') {
+    ocultarLogin();
+    render();
+  } else {
+    mostrarLogin();
+  }
 })();
 </script>
 </body>
